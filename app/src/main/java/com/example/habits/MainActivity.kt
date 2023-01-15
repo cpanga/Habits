@@ -10,6 +10,9 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.example.habits.databinding.ActivityMainBinding
@@ -19,11 +22,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
+
+        val viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -34,14 +37,16 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        println("@@@CMP - ${navController.currentDestination?.label}")
         binding.fab.setOnClickListener {
             navController.navigate(R.id.action_FirstFragment_to_SecondFragment)
+            viewModel.fabVisibile.postValue(false)
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
+        val fabObserver = Observer<Boolean> {
+            if (it!!) binding.fab.show()
+            else binding.fab.hide()
+        }
+        viewModel.fabVisibile.observe(this, fabObserver)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
