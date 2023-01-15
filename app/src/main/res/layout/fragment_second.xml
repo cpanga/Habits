@@ -14,26 +14,128 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/editable"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="16dp">
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:padding="16dp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="16dp">
 
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/habit_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
+                android:hint="Habit Name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:startIconDrawable="@drawable/baseline_task_24"
-                android:hint="Habit Name">
+                app:layout_constraintTop_toTopOf="parent"
+                app:startIconDrawable="@drawable/baseline_task_24">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    />
+                    android:layout_height="wrap_content" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/day_of_week"
+                android:layout_width="match_parent"
+                android:paddingTop="25dp"
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/habit_name">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/mon"
+                    style="?attr/materialIconButtonFilledStyle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="M"
+                    android:backgroundTint="@color/material_on_background_disabled"
+                    android:textSize="11sp"
+                    app:layout_constraintEnd_toStartOf="@+id/tue"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/tue"
+                    style="?attr/materialIconButtonFilledStyle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="T"
+                    android:textSize="11sp"
+                    app:layout_constraintEnd_toStartOf="@+id/wed"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/mon"
+                    app:layout_constraintTop_toTopOf="@+id/mon" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/wed"
+                    style="?attr/materialIconButtonFilledStyle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="W"
+                    android:textSize="11sp"
+                    app:layout_constraintEnd_toStartOf="@+id/thu"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tue"
+                    app:layout_constraintTop_toTopOf="@+id/tue" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/thu"
+                    style="?attr/materialIconButtonFilledStyle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="T"
+                    android:textSize="11sp"
+                    app:layout_constraintEnd_toStartOf="@+id/fri"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/wed"
+                    app:layout_constraintTop_toTopOf="@+id/wed" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/fri"
+                    style="?attr/materialIconButtonFilledStyle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="F"
+                    android:textSize="11sp"
+                    app:layout_constraintEnd_toStartOf="@+id/sat"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/thu"
+                    app:layout_constraintTop_toTopOf="@+id/thu" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/sat"
+                    style="?attr/materialIconButtonFilledStyle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="S"
+                    android:textSize="11sp"
+                    app:layout_constraintEnd_toStartOf="@+id/sun"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/fri"
+                    app:layout_constraintTop_toTopOf="@+id/fri" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/sun"
+                    style="?attr/materialIconButtonFilledStyle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="S"
+                    android:textSize="11sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/sat"
+                    app:layout_constraintTop_toTopOf="@+id/sat"
+                    tools:layout_editor_absoluteY="27dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

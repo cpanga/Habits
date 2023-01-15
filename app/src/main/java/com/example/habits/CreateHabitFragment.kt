@@ -5,7 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.habits.databinding.FragmentSecondBinding
 
@@ -36,6 +40,33 @@ class CreateHabitFragment : Fragment() {
 
         binding.buttonSecond.setOnClickListener {
             findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+        }
+
+        setDayOfWeekObserversAndListeners()
+
+    }
+    private fun setDayOfWeekObserversAndListeners() {
+        setDayOfWeekObserversAndListenerDay(binding.mon, viewModel.monEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.tue, viewModel.tueEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.wed, viewModel.wedEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.thu, viewModel.thuEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.fri, viewModel.friEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.sat, viewModel.satEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.sun, viewModel.sunEnabled)
+    }
+
+    private fun setDayOfWeekObserversAndListenerDay(button: Button, enabled: MutableLiveData<Boolean>) {
+        val fabObserver = Observer<Boolean> {
+            if (enabled.value != false) button.apply{
+                background = false
+                isClickable = true
+            }
+            else button.isEnabled = true
+        }
+        enabled.observe(viewLifecycleOwner, fabObserver)
+
+        button.setOnClickListener{
+            enabled.postValue(!(enabled.value ?: false) )
         }
     }
 
