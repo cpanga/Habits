@@ -54,7 +54,6 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:text="M"
-                    android:backgroundTint="@color/material_on_background_disabled"
                     android:textSize="11sp"
                     app:layout_constraintEnd_toStartOf="@+id/tue"
                     app:layout_constraintTop_toTopOf="parent"

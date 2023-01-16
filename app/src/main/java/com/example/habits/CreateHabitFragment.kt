@@ -1,5 +1,6 @@
 package com.example.habits
 
+import android.graphics.PorterDuff
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -58,10 +59,9 @@ class CreateHabitFragment : Fragment() {
     private fun setDayOfWeekObserversAndListenerDay(button: Button, enabled: MutableLiveData<Boolean>) {
         val fabObserver = Observer<Boolean> {
             if (enabled.value != false) button.apply{
-                background = false
-                isClickable = true
+                alpha = 1.0F
             }
-            else button.isEnabled = true
+            else button.alpha = 0.5F
         }
         enabled.observe(viewLifecycleOwner, fabObserver)
 
