@@ -42,7 +42,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/day_of_week"
                 android:layout_width="match_parent"
-                android:paddingTop="25dp"
+                android:paddingVertical="18dp"
                 android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -135,6 +135,21 @@
                     tools:layout_editor_absoluteY="27dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/habit_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Description"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/day_of_week"
+                app:startIconDrawable="@drawable/baseline_notes_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
