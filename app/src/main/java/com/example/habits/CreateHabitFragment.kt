@@ -1,6 +1,5 @@
 package com.example.habits
 
-import android.graphics.PorterDuff
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,11 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.habits.databinding.FragmentSecondBinding
+import com.google.android.material.textfield.TextInputLayout
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -44,6 +43,21 @@ class CreateHabitFragment : Fragment() {
         }
 
         setDayOfWeekObserversAndListeners()
+        setTextBoxObservers(binding.reminderTime, viewModel.reminderTime)
+
+    }
+
+    private fun setTextBoxListener(textBox: TextInputLayout) {
+        textBox.setOnClickListener {
+            // Open Time Picker
+        }
+    }
+
+    private fun setTextBoxObservers(textBox: TextInputLayout, liveData: MutableLiveData<String>) {
+        val textBoxObserver = Observer<String> {
+            textBox.editText?.setText(it)
+        }
+        liveData.observe(viewLifecycleOwner, textBoxObserver)
 
     }
     private fun setDayOfWeekObserversAndListeners() {

@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
+    <string name="second_fragment_label">Create a new Habit</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="save">Save</string>
@@ -44,4 +44,15 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string name="time_of_reminder">Time of reminder</string>
+    <string name="select_days_of_week">Select days of week</string>
+    <string name="habit_name">Habit Name</string>
+    <string name="create_new_habit">Create a new Habit</string>
+    <string name="description">Description</string>
+    <string name="default_time">9:00 AM</string>
+    <string name="s">S</string>
+    <string name="f">F</string>
+    <string name="t">T</string>
+    <string name="w">W</string>
+    <string name="m">M</string>
 </resources>

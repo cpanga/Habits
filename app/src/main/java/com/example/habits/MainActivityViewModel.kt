@@ -15,4 +15,8 @@ class MainActivityViewModel: ViewModel() {
     val friEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
     val satEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
     val sunEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
+
+    val reminderTime = MutableLiveData<String>().apply { postValue("9:00 AM") }
+    val habitName = MutableLiveData<String>()
+    val habitDesc = MutableLiveData<String>()
 }
