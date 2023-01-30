@@ -3,7 +3,6 @@ package com.example.habits
 import androidx.room.*
 
 class HabitEntity {
-
     data class Habit(
         @PrimaryKey val uid: Int,
         @ColumnInfo(name = "habit_name") val habitName: String?,

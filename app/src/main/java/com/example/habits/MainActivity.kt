@@ -1,7 +1,6 @@
 package com.example.habits
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.navigation.findNavController
@@ -10,11 +9,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import androidx.viewpager.widget.ViewPager
 import com.example.habits.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -39,14 +35,14 @@ class MainActivity : AppCompatActivity() {
 
         binding.fab.setOnClickListener {
             navController.navigate(R.id.action_FirstFragment_to_SecondFragment)
-            viewModel.fabVisibile.postValue(false)
+            viewModel.fabVisible.postValue(false)
         }
 
         val fabObserver = Observer<Boolean> {
             if (it!!) binding.fab.show()
             else binding.fab.hide()
         }
-        viewModel.fabVisibile.observe(this, fabObserver)
+        viewModel.fabVisible.observe(this, fabObserver)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
