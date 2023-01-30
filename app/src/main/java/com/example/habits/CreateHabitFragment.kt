@@ -11,12 +11,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.habits.databinding.FragmentSecondBinding
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
+import java.util.logging.Logger
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
 class CreateHabitFragment : Fragment() {
+    companion object {
+        val log = Logger.getLogger(CreateHabitFragment::class.java.name)
+    }
 
     private var _binding: FragmentSecondBinding? = null
 
@@ -29,7 +36,7 @@ class CreateHabitFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         return binding.root
 
@@ -42,23 +49,47 @@ class CreateHabitFragment : Fragment() {
             findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
         }
 
+        log.info("Set Observers and Listeners")
         setDayOfWeekObserversAndListeners()
-        setTextBoxObservers(binding.reminderTime, viewModel.reminderTime)
+        setTextBoxObservers(binding.reminderTimeBox, viewModel.reminderTime)
+        setTextBoxListener(binding.reminderTimeBox)
 
     }
 
-    private fun setTextBoxListener(textBox: TextInputLayout) {
+    private fun setTextBoxListener(textBox: TextInputEditText) {
+
         textBox.setOnClickListener {
-            // Open Time Picker
+            log.info("User: Pressed Time textbox")
+            val materialTimePicker: MaterialTimePicker = MaterialTimePicker.Builder()
+                .setTitleText("Select reminder time")
+                .setHour(viewModel.reminderTime.value?.first() ?: 9)
+                .setMinute(viewModel.reminderTime.value?.last() ?: 0)
+                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .build()
+
+            materialTimePicker.apply {
+                show(this@CreateHabitFragment.parentFragmentManager,"MainActivity")
+                addOnPositiveButtonClickListener {
+                    viewModel.reminderTime.postValue(listOf(this.hour,this.minute))
+                }
+            }
         }
     }
 
-    private fun setTextBoxObservers(textBox: TextInputLayout, liveData: MutableLiveData<String>) {
-        val textBoxObserver = Observer<String> {
-            textBox.editText?.setText(it)
+    private fun setTextBoxObservers(textBox: TextInputEditText, reminderTime: MutableLiveData<List<Int>>) {
+        val textBoxObserver = Observer<List<Int>> {
+            textBox.setText(convertTimeToString(it.first(),it.last()))
         }
-        liveData.observe(viewLifecycleOwner, textBoxObserver)
+        reminderTime.observe(viewLifecycleOwner, textBoxObserver)
 
+    }
+
+    private fun convertTimeToString(hour: Int, minute:Int): String {
+        val amOrPm = if (hour>11) "PM" else "AM"
+        val adjHour = if (hour>12) hour-12 else hour
+        val adjMin = if (minute<10) "0$minute" else minute
+
+        return "$adjHour:$adjMin $amOrPm"
     }
     private fun setDayOfWeekObserversAndListeners() {
         setDayOfWeekObserversAndListenerDay(binding.mon, viewModel.monEnabled)
