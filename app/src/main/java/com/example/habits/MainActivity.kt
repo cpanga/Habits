@@ -11,6 +11,9 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
+import com.example.habits.database.Habit
+import com.example.habits.database.HabitDatabase
 import com.example.habits.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -22,7 +25,22 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
-        val viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
+        val db = Room.databaseBuilder(
+            applicationContext,
+            HabitDatabase::class.java, "habit-database"
+        ).build()
+
+        val hab = Habit(1,"dummy", "description", listOf(true,true,true,true,true,true,true),9,0,0)
+
+        db.habitDao().insertAll(hab)
+
+        val viewModel: MainActivityViewModel by lazy {
+            val activity = requireNotNull(this) {
+                "You can only access the viewModel after onActivityCreated()"
+            }
+            ViewModelProvider(this, MainActivityViewModel.Factory(activity.application))[MainActivityViewModel::class.java]
+        }
+       // val viewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

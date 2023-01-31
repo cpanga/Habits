@@ -1,9 +1,15 @@
 package com.example.habits
 
+import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.example.habits.database.HabitRepository
+import com.example.habits.database.getDatabase
 
-class MainActivityViewModel: ViewModel() {
+class MainActivityViewModel(application: Application): ViewModel() {
+
+    private val habitRepository = HabitRepository(getDatabase(application))
 
     val fabVisible = MutableLiveData<Boolean>().apply {postValue(true)}
 
@@ -43,7 +49,7 @@ class MainActivityViewModel: ViewModel() {
     }
 
     fun moreThanZeroDaysSelected(): Boolean{
-        return ensureAtleastOneIsTrue(
+        return ensureAtLeastOneIsTrue(
             monEnabled,
             tueEnabled,
             wedEnabled,
@@ -54,10 +60,23 @@ class MainActivityViewModel: ViewModel() {
         )
     }
 
-    private fun ensureAtleastOneIsTrue(vararg day: MutableLiveData<Boolean>): Boolean {
+    private fun ensureAtLeastOneIsTrue(vararg day: MutableLiveData<Boolean>): Boolean {
         for (day_ in day) {
             if (day_.value == true) return true
         }
         return false
+    }
+
+    /**
+     * Factory for constructing DevByteViewModel with parameter
+     */
+    class Factory(val app: Application) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(MainActivityViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return MainActivityViewModel(app) as T
+            }
+            throw IllegalArgumentException("Unable to construct viewmodel")
+        }
     }
 }
