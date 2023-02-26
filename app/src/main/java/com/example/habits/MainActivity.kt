@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         val hab = Habit(1,"dummy", "description", listOf(true,true,true,true,true,true,true),9,0,0)
 
-        db.habitDao().insertAll(hab)
+        // db.habitDao().insertAll(hab)
 
         val viewModel: MainActivityViewModel by lazy {
             val activity = requireNotNull(this) {

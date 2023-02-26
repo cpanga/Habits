@@ -9,7 +9,7 @@ import com.example.habits.database.getDatabase
 
 class MainActivityViewModel(application: Application): ViewModel() {
 
-    private val habitRepository = HabitRepository(getDatabase(application))
+//    private val habitRepository = HabitRepository(getDatabase(application))
 
     val fabVisible = MutableLiveData<Boolean>().apply {postValue(true)}
 
