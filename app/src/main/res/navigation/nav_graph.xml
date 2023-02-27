@@ -27,5 +27,8 @@
         <argument
             android:name="habit"
             app:argType="android.os.Bundle" />
+        <argument
+            android:name="edit"
+            app:argType="boolean" />
     </fragment>
 </navigation>

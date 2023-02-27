@@ -30,8 +30,6 @@ class MainActivity : AppCompatActivity() {
             HabitDatabase::class.java, "habit-database"
         ).build()
 
-        val hab = Habit(1,"dummy", "description", listOf(true,true,true,true,true,true,true),9,0,0)
-
         // db.habitDao().insertAll(hab)
 
         val viewModel: MainActivityViewModel by lazy {
