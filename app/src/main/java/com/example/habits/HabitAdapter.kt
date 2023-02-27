@@ -5,21 +5,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.navigation.Navigation.findNavController
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habits.database.Habit
-import com.example.habits.util.toBundle
+import com.example.habits.util.getStringFromDays
+import java.util.logging.Logger
 
 /**
  * Adapter for the [RecyclerView] in [FirstFragment].
  */
 class HabitAdapter : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
+    companion object{
+        val log: Logger = Logger.getLogger(CreateHabitFragment::class.java.name)
+    }
 
-    private val hab0 = Habit(1,"Habit 1", "description", listOf(true,true,false,true,true,true,true),9,0,0)
-    private val hab1 = Habit(1,"Habit 2", "description", listOf(false,true,true,false,true,true,true),9,0,5)
-    private val hab2 = Habit(1,"Habit 3", "description", listOf(true,false,true,true,true,false,false),9,0,2)
+
+    private val hab0 = Habit(1,"Habit 1", "description", "1101011", 0, 22, 0)
+    private val hab1 = Habit(1,"Habit 2", "description", "1010011", 18, 45, 5)
+    private val hab2 = Habit(1,"Habit 3", "description", "0111100", 22, 0, 2)
 
     private val habits = listOf(hab0,hab1,hab2)
 
@@ -46,7 +50,8 @@ class HabitAdapter : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
         holder.daysOfWeek.text = getStringFromDays(item.daysOfWeek)
         holder.streak.text = item.streak.toString()
         holder.edit.setOnClickListener {
-            val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(item.toBundle(),true)
+            log.info("USER: Clicked edit button on habit: ${item.habitName}")
+            val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(item)
             holder.itemView.findNavController().navigate(action)
         }
     }
@@ -55,18 +60,4 @@ class HabitAdapter : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
         return habits.size
     }
 
-    private fun getStringFromDays(days: List<Boolean>): String {
-
-        var str = ""
-
-        if (days[0]) str += "Mon "
-        if (days[1]) str += "Tue "
-        if (days[2]) str += "Wed "
-        if (days[3]) str += "Thu "
-        if (days[4]) str += "Fri "
-        if (days[5]) str += "Sat "
-        if (days[6]) str += "Sun "
-
-        return str
-    }
 }

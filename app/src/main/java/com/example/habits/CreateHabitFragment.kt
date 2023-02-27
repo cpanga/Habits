@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.habits.databinding.FragmentSecondBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -27,6 +28,20 @@ class CreateHabitFragment : Fragment() {
         val log: Logger = Logger.getLogger(CreateHabitFragment::class.java.name)
     }
 
+    // State of each day of week button
+    private val monEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
+    private val tueEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
+    private val wedEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
+    private val thuEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
+    private val friEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
+    private val satEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
+    private val sunEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
+
+    private val reminderTime = MutableLiveData<List<Int>>().apply { postValue(listOf(9,0)) }
+    private var streak:Int = 0
+    private val habitName = MutableLiveData<String>()
+    private val habitDesc = MutableLiveData<String>()
+
     private var _binding: FragmentSecondBinding? = null
 
     // This property is only valid between onCreateView and
@@ -42,11 +57,13 @@ class CreateHabitFragment : Fragment() {
     ): View {
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        populateValues()
+        //updateHabitNameAndDesc()
 
         binding.buttonSecond.setOnClickListener {
             log.info("USER: Save button pressed")
@@ -70,10 +87,18 @@ class CreateHabitFragment : Fragment() {
                 log.info("Errors in text boxes, not proceeding with save")
                 return@setOnClickListener
             } else {
-                if (viewModel.moreThanZeroDaysSelected()) {
+                if (viewModel.moreThanZeroDaysSelected(
+                        monEnabled,
+                        tueEnabled,
+                        wedEnabled,
+                        thuEnabled,
+                        friEnabled,
+                        satEnabled,
+                        sunEnabled
+                )) {
                     log.info("Saving habit")
                     findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
-                    viewModel.resetValues()
+                    applyDefaultValues()
                 } else {
                     log.info("No days selected. Show snackbar")
                     createNoDaysSelectedSnackbar()
@@ -85,7 +110,7 @@ class CreateHabitFragment : Fragment() {
         setOnTextChangedListeners(binding.habitName, getString(R.string.habit_name_error))
         setOnTextChangedListeners(binding.habitDesc, getString(R.string.habit_desc_error))
         setDayOfWeekObserversAndListeners()
-        setTextBoxObservers(binding.reminderTimeBox, viewModel.reminderTime)
+        setTextBoxObservers(binding.reminderTimeBox, reminderTime)
         setTextBoxListener(binding.reminderTimeBox)
 
     }
@@ -114,15 +139,15 @@ class CreateHabitFragment : Fragment() {
             log.info("User: Pressed Time textbox")
             val materialTimePicker: MaterialTimePicker = MaterialTimePicker.Builder()
                 .setTitleText("Select reminder time")
-                .setHour(viewModel.reminderTime.value?.first() ?: 9)
-                .setMinute(viewModel.reminderTime.value?.last() ?: 0)
+                .setHour(reminderTime.value?.first() ?: 9)
+                .setMinute(reminderTime.value?.last() ?: 0)
                 .setTimeFormat(TimeFormat.CLOCK_12H)
                 .build()
 
             materialTimePicker.apply {
                 show(this@CreateHabitFragment.parentFragmentManager,"MainActivity")
                 addOnPositiveButtonClickListener {
-                    viewModel.reminderTime.postValue(listOf(this.hour,this.minute))
+                    reminderTime.postValue(listOf(this.hour,this.minute))
                 }
             }
         }
@@ -130,27 +155,20 @@ class CreateHabitFragment : Fragment() {
 
     private fun setTextBoxObservers(textBox: TextInputEditText, reminderTime: MutableLiveData<List<Int>>) {
         val textBoxObserver = Observer<List<Int>> {
-            textBox.setText(convertTimeToString(it.first(),it.last()))
+            textBox.setText(viewModel.convertTimeToString(it.first(),it.last()))
         }
         reminderTime.observe(viewLifecycleOwner, textBoxObserver)
 
     }
 
-    private fun convertTimeToString(hour: Int, minute:Int): String {
-        val amOrPm = if (hour>11) "PM" else "AM"
-        val adjHour = if (hour>12) hour-12 else hour
-        val adjMin = if (minute<10) "0$minute" else minute
-
-        return "$adjHour:$adjMin $amOrPm"
-    }
     private fun setDayOfWeekObserversAndListeners() {
-        setDayOfWeekObserversAndListenerDay(binding.mon, viewModel.monEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.tue, viewModel.tueEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.wed, viewModel.wedEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.thu, viewModel.thuEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.fri, viewModel.friEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.sat, viewModel.satEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.sun, viewModel.sunEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.mon, monEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.tue, tueEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.wed, wedEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.thu, thuEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.fri, friEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.sat, satEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.sun, sunEnabled)
     }
 
     private fun setDayOfWeekObserversAndListenerDay(button: Button, enabled: MutableLiveData<Boolean>) {
@@ -165,6 +183,56 @@ class CreateHabitFragment : Fragment() {
         button.setOnClickListener{
             enabled.postValue(!(enabled.value ?: false) )
         }
+    }
+
+    private fun populateValues() {
+        val args: CreateHabitFragmentArgs by navArgs()
+        val habit = args.habit
+        if (habit == null) applyDefaultValues()
+        else {
+            log.info("Applying saved values. habit name = ${habit.habitName}")
+            habitName.postValue(habit.habitName)
+            habitDesc.postValue(habit.habitDesc)
+            // TODO - fix hack here
+            binding.habitName.editText?.setText(habit.habitName)
+            binding.habitDesc.editText?.setText(habit.habitDesc)
+            streak = habit.streak
+            reminderTime.postValue(listOf(habit.notifHour, habit.notifMin))
+            viewModel.postDayValueFromString(
+                monEnabled,
+                tueEnabled,
+                wedEnabled,
+                thuEnabled,
+                friEnabled,
+                satEnabled,
+                sunEnabled,
+                daysString = habit.daysOfWeek
+            )
+        }
+    }
+
+    // TODO - handle this better?
+    private fun updateHabitNameAndDesc() {
+        log.info("Updating Habit Name and Description boxes. Name:${habitName.value}, Desc:${habitDesc.value}")
+        binding.habitName.editText?.setText(habitName.value)
+        binding.habitDesc.editText?.setText(habitDesc.value)
+    }
+
+    private fun applyDefaultValues() {
+        // Reset the new habit form values to the default
+        viewModel.postDayValueFalse(
+            monEnabled,
+            tueEnabled,
+            wedEnabled,
+            thuEnabled,
+            friEnabled,
+            satEnabled,
+            sunEnabled
+        )
+        reminderTime.postValue((listOf(9,0)))
+        habitDesc.postValue("")
+        habitName.postValue("")
+        streak = 0
     }
 
     override fun onDestroyView() {

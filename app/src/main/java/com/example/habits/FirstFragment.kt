@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habits.databinding.FragmentFirstBinding
+import java.util.logging.Logger
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.

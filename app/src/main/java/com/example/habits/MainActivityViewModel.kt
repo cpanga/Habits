@@ -13,50 +13,39 @@ class MainActivityViewModel(application: Application): ViewModel() {
 
     val fabVisible = MutableLiveData<Boolean>().apply {postValue(true)}
 
-    // State of each day of week button
-    val monEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    val tueEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    val wedEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    val thuEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    val friEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    val satEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    val sunEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-
-    val reminderTime = MutableLiveData<List<Int>>().apply { postValue(listOf(9,0)) }
-    val habitName = MutableLiveData<String>()
-    val habitDesc = MutableLiveData<String>()
-
-    fun resetValues() {
-        // Reset the new habit form values to the default
-        postDayValueFalse(
-            monEnabled,
-            tueEnabled,
-            wedEnabled,
-            thuEnabled,
-            friEnabled,
-            satEnabled,
-            sunEnabled
-        )
-        reminderTime.postValue((listOf(9,0)))
-        habitDesc.postValue("")
-        habitName.postValue("")
-    }
-
-    private fun postDayValueFalse(vararg day: MutableLiveData<Boolean>) {
+    fun postDayValueFalse(vararg day: MutableLiveData<Boolean>) {
         for (day_ in day) {
             day_.postValue(false)
         }
     }
 
-    fun moreThanZeroDaysSelected(): Boolean{
+    fun postDayValueFromString(vararg day: MutableLiveData<Boolean>, daysString: String) {
+        if (daysString.length!=7) println("Not passed in 7 days - days length is ${daysString.length}")
+        else {
+            for ((index,day_) in day.withIndex()) {
+                day_.postValue(daysString[index] == '1')
+            }
+        }
+    }
+
+
+    fun moreThanZeroDaysSelected(
+        mon: MutableLiveData<Boolean>,
+        tue: MutableLiveData<Boolean>,
+        wed: MutableLiveData<Boolean>,
+        thu: MutableLiveData<Boolean>,
+        fri: MutableLiveData<Boolean>,
+        sat: MutableLiveData<Boolean>,
+        sun: MutableLiveData<Boolean>
+    ): Boolean{
         return ensureAtLeastOneIsTrue(
-            monEnabled,
-            tueEnabled,
-            wedEnabled,
-            thuEnabled,
-            friEnabled,
-            satEnabled,
-            sunEnabled
+            mon,
+            tue,
+            wed,
+            thu,
+            fri,
+            sat,
+            sun
         )
     }
 
@@ -67,8 +56,16 @@ class MainActivityViewModel(application: Application): ViewModel() {
         return false
     }
 
+    fun convertTimeToString(hour: Int, minute:Int): String {
+        val amOrPm = if (hour>11) "PM" else "AM"
+        val adjHour = if (hour>12) hour-12 else hour
+        val adjMin = if (minute<10) "0$minute" else minute
+
+        return "$adjHour:$adjMin $amOrPm"
+    }
+
     /**
-     * Factory for constructing DevByteViewModel with parameter
+     * Factory for constructing Viewmodel with parameter
      */
     class Factory(val app: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
