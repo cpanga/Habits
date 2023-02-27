@@ -70,6 +70,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:icon="@drawable/baseline_edit_24"
-        style="@style/Widget.Material3.Button.IconButton.Outlined"/>
+        style="@style/Widget.Material3.Button.IconButton"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

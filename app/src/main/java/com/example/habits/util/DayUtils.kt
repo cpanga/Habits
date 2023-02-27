@@ -2,6 +2,8 @@ package com.example.habits.util
 
 fun getStringFromDays(days: String): String {
 
+    if (days == "1111111")  return "Every day"
+
     var str = ""
 
     if (days[0] == '1') str += "Mon "

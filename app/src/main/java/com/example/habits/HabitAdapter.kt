@@ -23,7 +23,7 @@ class HabitAdapter : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
 
     private val hab0 = Habit(1,"Habit 1", "description", "1101011", 0, 22, 0)
     private val hab1 = Habit(1,"Habit 2", "description", "1010011", 18, 45, 5)
-    private val hab2 = Habit(1,"Habit 3", "description", "0111100", 22, 0, 2)
+    private val hab2 = Habit(1,"Habit 3", "description", "1111111", 22, 0, 2)
 
     private val habits = listOf(hab0,hab1,hab2)
 
