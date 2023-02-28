@@ -12,7 +12,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.habits.databinding.FragmentSecondBinding
+import com.example.habits.databinding.FragmentHabitCreateBinding
+import com.example.habits.util.convertTimeToString
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -42,7 +43,7 @@ class CreateHabitFragment : Fragment() {
     private val habitName = MutableLiveData<String>()
     private val habitDesc = MutableLiveData<String>()
 
-    private var _binding: FragmentSecondBinding? = null
+    private var _binding: FragmentHabitCreateBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -55,7 +56,7 @@ class CreateHabitFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSecondBinding.inflate(inflater, container, false)
+        _binding = FragmentHabitCreateBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -68,6 +69,7 @@ class CreateHabitFragment : Fragment() {
         binding.buttonSecond.setOnClickListener {
             log.info("USER: Save button pressed")
 
+            // TODO this is bugged. Fix
             if (!textBoxesInteractedWith) {
                 log.info("Text boxes have not been interacted with. Flag errors")
                 val habitNameEmpty = binding.habitName.editText?.text?.trim()?.isEmpty() == true
@@ -155,7 +157,7 @@ class CreateHabitFragment : Fragment() {
 
     private fun setTextBoxObservers(textBox: TextInputEditText, reminderTime: MutableLiveData<List<Int>>) {
         val textBoxObserver = Observer<List<Int>> {
-            textBox.setText(viewModel.convertTimeToString(it.first(),it.last()))
+            textBox.setText(convertTimeToString(it.first(),it.last()))
         }
         reminderTime.observe(viewLifecycleOwner, textBoxObserver)
 
@@ -193,7 +195,7 @@ class CreateHabitFragment : Fragment() {
             log.info("Applying saved values. habit name = ${habit.habitName}")
             habitName.postValue(habit.habitName)
             habitDesc.postValue(habit.habitDesc)
-            // TODO - fix hack here
+            // TODO - fix hack here and set observers
             binding.habitName.editText?.setText(habit.habitName)
             binding.habitDesc.editText?.setText(habit.habitDesc)
             streak = habit.streak
@@ -209,13 +211,6 @@ class CreateHabitFragment : Fragment() {
                 daysString = habit.daysOfWeek
             )
         }
-    }
-
-    // TODO - handle this better?
-    private fun updateHabitNameAndDesc() {
-        log.info("Updating Habit Name and Description boxes. Name:${habitName.value}, Desc:${habitDesc.value}")
-        binding.habitName.editText?.setText(habitName.value)
-        binding.habitDesc.editText?.setText(habitDesc.value)
     }
 
     private fun applyDefaultValues() {

@@ -4,8 +4,6 @@ import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.habits.database.HabitRepository
-import com.example.habits.database.getDatabase
 
 class MainActivityViewModel(application: Application): ViewModel() {
 
@@ -56,13 +54,7 @@ class MainActivityViewModel(application: Application): ViewModel() {
         return false
     }
 
-    fun convertTimeToString(hour: Int, minute:Int): String {
-        val amOrPm = if (hour>11) "PM" else "AM"
-        val adjHour = if (hour>12) hour-12 else hour
-        val adjMin = if (minute<10) "0$minute" else minute
 
-        return "$adjHour:$adjMin $amOrPm"
-    }
 
     /**
      * Factory for constructing Viewmodel with parameter

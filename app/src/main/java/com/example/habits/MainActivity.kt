@@ -15,8 +15,12 @@ import androidx.room.Room
 import com.example.habits.database.Habit
 import com.example.habits.database.HabitDatabase
 import com.example.habits.databinding.ActivityMainBinding
+import java.util.logging.Logger
 
 class MainActivity : AppCompatActivity() {
+    companion object{
+        val log: Logger = Logger.getLogger(MainActivity::class.java.name)
+    }
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -50,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.fab.setOnClickListener {
+            log.info("USER: Clicked FAB, moving to")
             navController.navigate(R.id.action_FirstFragment_to_SecondFragment)
             viewModel.fabVisible.postValue(false)
         }
