@@ -18,7 +18,7 @@ import com.example.habits.databinding.ActivityMainBinding
 import java.util.logging.Logger
 
 class MainActivity : AppCompatActivity() {
-    companion object{
+    companion object {
         val log: Logger = Logger.getLogger(MainActivity::class.java.name)
     }
 
@@ -40,9 +40,12 @@ class MainActivity : AppCompatActivity() {
             val activity = requireNotNull(this) {
                 "You can only access the viewModel after onActivityCreated()"
             }
-            ViewModelProvider(this, MainActivityViewModel.Factory(activity.application))[MainActivityViewModel::class.java]
+            ViewModelProvider(
+                this,
+                MainActivityViewModel.Factory(activity.application)
+            )[MainActivityViewModel::class.java]
         }
-       // val viewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
+        // val viewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

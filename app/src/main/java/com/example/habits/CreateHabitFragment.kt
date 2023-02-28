@@ -63,7 +63,7 @@ class CreateHabitFragment : Fragment() {
             checkTextBoxErrors(habitNameEmpty, habitDescEmpty)
 
             // If there are errors with the text box inputs, log and cancel saving
-            if ( (binding.habitName.error != null) || (binding.habitDesc.error != null)) {
+            if ((binding.habitName.error != null) || (binding.habitDesc.error != null)) {
                 log.info("Errors in text boxes, not proceeding with save")
                 return@setOnClickListener
             }
@@ -76,7 +76,8 @@ class CreateHabitFragment : Fragment() {
                     uiModel.friEnabled,
                     uiModel.satEnabled,
                     uiModel.sunEnabled
-            )) {
+                )
+            ) {
                 log.info("No days selected. Show snackbar")
                 createNoDaysSelectedSnackbar()
             } else {
@@ -95,7 +96,7 @@ class CreateHabitFragment : Fragment() {
 
     }
 
-    private fun checkTextBoxErrors(habitNameEmpty: Boolean, habitDescEmpty: Boolean){
+    private fun checkTextBoxErrors(habitNameEmpty: Boolean, habitDescEmpty: Boolean) {
         if (!textBoxesInteractedWith && (habitNameEmpty || habitDescEmpty)) {
             log.info("Text boxes have not been interacted with. Flag errors")
 
@@ -119,7 +120,7 @@ class CreateHabitFragment : Fragment() {
             Snackbar.LENGTH_LONG
         ).show()
     }
-    
+
     private fun setOnTextChangedListeners(textBox: TextInputLayout, errorText: String) {
         textBox.editText?.doAfterTextChanged {
             showTextBoxError(it?.trim()?.isEmpty() == true, textBox, errorText)
@@ -146,18 +147,21 @@ class CreateHabitFragment : Fragment() {
                 .build()
 
             materialTimePicker.apply {
-                show(this@CreateHabitFragment.parentFragmentManager,"MainActivity")
+                show(this@CreateHabitFragment.parentFragmentManager, "MainActivity")
                 addOnPositiveButtonClickListener {
                     log.info("USER: Pressed save on time picker")
-                    uiModel.reminderTime.postValue(listOf(this.hour,this.minute))
+                    uiModel.reminderTime.postValue(listOf(this.hour, this.minute))
                 }
             }
         }
     }
 
-    private fun setTextBoxObservers(textBox: TextInputEditText, reminderTime: MutableLiveData<List<Int>>) {
+    private fun setTextBoxObservers(
+        textBox: TextInputEditText,
+        reminderTime: MutableLiveData<List<Int>>
+    ) {
         val textBoxObserver = Observer<List<Int>> {
-            textBox.setText(convertTimeToString(it.first(),it.last()))
+            textBox.setText(convertTimeToString(it.first(), it.last()))
         }
         reminderTime.observe(viewLifecycleOwner, textBoxObserver)
 
@@ -173,17 +177,20 @@ class CreateHabitFragment : Fragment() {
         setDayOfWeekObserversAndListenerDay(binding.sun, uiModel.sunEnabled)
     }
 
-    private fun setDayOfWeekObserversAndListenerDay(button: Button, enabled: MutableLiveData<Boolean>) {
+    private fun setDayOfWeekObserversAndListenerDay(
+        button: Button,
+        enabled: MutableLiveData<Boolean>
+    ) {
         val fabObserver = Observer<Boolean> {
-            if (enabled.value != false) button.apply{
+            if (enabled.value != false) button.apply {
                 alpha = 1.0F
             }
             else button.alpha = 0.5F
         }
         enabled.observe(viewLifecycleOwner, fabObserver)
 
-        button.setOnClickListener{
-            enabled.postValue(!(enabled.value ?: false) )
+        button.setOnClickListener {
+            enabled.postValue(!(enabled.value ?: false))
         }
     }
 
@@ -195,10 +202,10 @@ class CreateHabitFragment : Fragment() {
         if (habit == null) {
             requireActivity().actionBar?.title = getString(R.string.create_habit_fragment_label)
             applyDefaultValues()
-        }
-        else {
+        } else {
             log.info("Changing title to ${getString(R.string.create_habit_fragment_label_edit)}")
-            requireActivity().actionBar?.title = getString(R.string.create_habit_fragment_label_edit)
+            requireActivity().actionBar?.title =
+                getString(R.string.create_habit_fragment_label_edit)
             binding.createButton.text = getString(R.string.save)
 
             log.info("Applying saved values. habit name = ${habit.habitName}")
@@ -233,7 +240,7 @@ class CreateHabitFragment : Fragment() {
             uiModel.satEnabled,
             uiModel.sunEnabled
         )
-        uiModel.reminderTime.postValue((listOf(9,0)))
+        uiModel.reminderTime.postValue((listOf(9, 0)))
         uiModel.habitDesc.postValue("")
         uiModel.habitName.postValue("")
         uiModel.streak = 0

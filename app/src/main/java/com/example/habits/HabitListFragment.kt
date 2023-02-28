@@ -30,9 +30,9 @@ class HabitListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.recyclerView.run{
+        binding.recyclerView.run {
             adapter = HabitAdapter()
-            layoutManager= LinearLayoutManager(context)
+            layoutManager = LinearLayoutManager(context)
         }
     }
 

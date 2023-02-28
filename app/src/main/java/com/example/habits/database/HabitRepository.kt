@@ -13,9 +13,9 @@ class HabitRepository(private val database: HabitDatabase) {
     suspend fun pullHabitList(): List<Habit> {
         lateinit var habitList: List<Habit>
         withContext(Dispatchers.IO) {
-           habitList  =  database.habitDao().getAll()
+            habitList = database.habitDao().getAll()
         }
-        return  habitList
+        return habitList
     }
 
     suspend fun insertNewHabit(habit: Habit) {

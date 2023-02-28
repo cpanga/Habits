@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-class MainActivityViewModel(application: Application): ViewModel() {
+class MainActivityViewModel(application: Application) : ViewModel() {
 
 //    private val habitRepository = HabitRepository(getDatabase(application))
 
-    val fabVisible = MutableLiveData<Boolean>().apply {postValue(true)}
+    val fabVisible = MutableLiveData<Boolean>().apply { postValue(true) }
 
     /**
      * Factory for constructing Viewmodel with parameter
