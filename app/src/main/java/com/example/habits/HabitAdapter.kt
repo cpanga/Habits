@@ -19,7 +19,6 @@ class HabitAdapter : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
         val log: Logger = Logger.getLogger(HabitAdapter::class.java.name)
     }
 
-
     // Create some placeholder objects for testing
     private val hab0 = Habit(1,"Habit 1", "Description", "1101011", 0, 22, 0)
     private val hab1 = Habit(1,"Habit 2", "Description", "1010011", 18, 45, 5)

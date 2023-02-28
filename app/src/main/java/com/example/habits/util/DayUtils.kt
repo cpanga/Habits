@@ -1,5 +1,6 @@
 package com.example.habits.util
 
+import androidx.lifecycle.MutableLiveData
 import com.example.habits.MainActivity.Companion.log
 
 fun getStringFromDays(days: String): String {
@@ -34,7 +35,8 @@ fun convertTimeToString(hour: Int, minute:Int): String {
 }
 
 /**
- * Confirm that the days string is 7 digits long, and only contains 1s or 0s.
+ * Confirm that the days string is 7 digits long, and only contains 1s or 0s
+ * @param days string representing which days the user has selected to
  */
 fun daysStringIsValid(days: String): Boolean {
 
@@ -48,6 +50,34 @@ fun daysStringIsValid(days: String): Boolean {
         return false
     }
      return true
+}
+
+/**
+ * Post value of false to all LiveData arguments passed
+ */
+fun postDayValueFalse(vararg day: MutableLiveData<Boolean>) {
+    for (day_ in day) {
+        day_.postValue(false)
+    }
+}
+
+/**
+ * Parse a days string and update LiveData to match
+ */
+fun postDayValueFromString(vararg day: MutableLiveData<Boolean>, daysString: String) {
+    if (daysString.length!=7) println("Not passed in 7 days - days length is ${daysString.length}")
+    else {
+        for ((index,day_) in day.withIndex()) {
+            day_.postValue(daysString[index] == '1')
+        }
+    }
+}
+
+fun ensureAtLeastOneIsTrue(vararg day: MutableLiveData<Boolean>): Boolean {
+    for (day_ in day) {
+        if (day_.value == true) return true
+    }
+    return false
 }
 
 

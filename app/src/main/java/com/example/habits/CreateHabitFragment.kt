@@ -14,6 +14,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.habits.databinding.FragmentHabitCreateBinding
 import com.example.habits.util.convertTimeToString
+import com.example.habits.util.ensureAtLeastOneIsTrue
+import com.example.habits.util.postDayValueFalse
+import com.example.habits.util.postDayValueFromString
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -29,20 +32,7 @@ class CreateHabitFragment : Fragment() {
         val log: Logger = Logger.getLogger(CreateHabitFragment::class.java.name)
     }
 
-    // State of each day of week button
-    private val monEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    private val tueEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    private val wedEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    private val thuEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    private val friEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    private val satEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-    private val sunEnabled = MutableLiveData<Boolean>().apply {postValue(false)}
-
-    private val reminderTime = MutableLiveData<List<Int>>().apply { postValue(listOf(9,0)) }
-    private var streak:Int = 0
-    private val habitName = MutableLiveData<String>()
-    private val habitDesc = MutableLiveData<String>()
-
+    private val uiModel = CreateHabitFragmentUiModel()
     private var _binding: FragmentHabitCreateBinding? = null
 
     // This property is only valid between onCreateView and
@@ -64,47 +54,35 @@ class CreateHabitFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         populateValues()
-        //updateHabitNameAndDesc()
 
-        binding.buttonSecond.setOnClickListener {
-            log.info("USER: Save button pressed")
+        binding.createButton.setOnClickListener {
+            log.info("USER: ${binding.createButton.text} button pressed")
+            val habitNameEmpty = binding.habitName.editText?.text?.trim()?.isEmpty() == true
+            val habitDescEmpty = binding.habitDesc.editText?.text?.trim()?.isEmpty() == true
 
-            // TODO this is bugged. Fix
-            if (!textBoxesInteractedWith) {
-                log.info("Text boxes have not been interacted with. Flag errors")
-                val habitNameEmpty = binding.habitName.editText?.text?.trim()?.isEmpty() == true
-                val habitDescEmpty = binding.habitDesc.editText?.text?.trim()?.isEmpty() == true
-                showTextBoxError(
-                    habitNameEmpty,
-                    binding.habitName,
-                    getString(R.string.habit_name_error)
-                )
-                showTextBoxError(
-                    habitDescEmpty,
-                    binding.habitDesc,
-                    getString(R.string.habit_desc_error)
-                )
+            checkTextBoxErrors(habitNameEmpty, habitDescEmpty)
 
-            } else if ( (binding.habitName.error != null) || (binding.habitDesc.error != null)) {
+            // If there are errors with the text box inputs, log and cancel saving
+            if ( (binding.habitName.error != null) || (binding.habitDesc.error != null)) {
                 log.info("Errors in text boxes, not proceeding with save")
                 return@setOnClickListener
+            }
+
+            if (!ensureAtLeastOneIsTrue(
+                    uiModel.monEnabled,
+                    uiModel.tueEnabled,
+                    uiModel.wedEnabled,
+                    uiModel.thuEnabled,
+                    uiModel.friEnabled,
+                    uiModel.satEnabled,
+                    uiModel.sunEnabled
+            )) {
+                log.info("No days selected. Show snackbar")
+                createNoDaysSelectedSnackbar()
             } else {
-                if (viewModel.moreThanZeroDaysSelected(
-                        monEnabled,
-                        tueEnabled,
-                        wedEnabled,
-                        thuEnabled,
-                        friEnabled,
-                        satEnabled,
-                        sunEnabled
-                )) {
-                    log.info("Saving habit")
-                    findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
-                    applyDefaultValues()
-                } else {
-                    log.info("No days selected. Show snackbar")
-                    createNoDaysSelectedSnackbar()
-                }
+                log.info("Saving habit")
+                // TODO save habit
+                findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
             }
         }
 
@@ -112,13 +90,34 @@ class CreateHabitFragment : Fragment() {
         setOnTextChangedListeners(binding.habitName, getString(R.string.habit_name_error))
         setOnTextChangedListeners(binding.habitDesc, getString(R.string.habit_desc_error))
         setDayOfWeekObserversAndListeners()
-        setTextBoxObservers(binding.reminderTimeBox, reminderTime)
-        setTextBoxListener(binding.reminderTimeBox)
+        setTextBoxObservers(binding.reminderTimeBox, uiModel.reminderTime)
+        setTimePickerBoxListener(binding.reminderTimeBox)
 
     }
 
+    private fun checkTextBoxErrors(habitNameEmpty: Boolean, habitDescEmpty: Boolean){
+        if (!textBoxesInteractedWith && (habitNameEmpty || habitDescEmpty)) {
+            log.info("Text boxes have not been interacted with. Flag errors")
+
+            showTextBoxError(
+                habitNameEmpty,
+                binding.habitName,
+                getString(R.string.habit_name_error)
+            )
+            showTextBoxError(
+                habitDescEmpty,
+                binding.habitDesc,
+                getString(R.string.habit_desc_error)
+            )
+        }
+    }
+
     private fun createNoDaysSelectedSnackbar() {
-        Snackbar.make(requireActivity().findViewById(R.id.editable),"Please select at least one day of the week", Snackbar.LENGTH_LONG).show()
+        Snackbar.make(
+            requireActivity().findViewById(R.id.editable),
+            getString(R.string.select_at_least_one_day),
+            Snackbar.LENGTH_LONG
+        ).show()
     }
     
     private fun setOnTextChangedListeners(textBox: TextInputLayout, errorText: String) {
@@ -136,20 +135,21 @@ class CreateHabitFragment : Fragment() {
         }
     }
 
-    private fun setTextBoxListener(textBox: TextInputEditText) {
+    private fun setTimePickerBoxListener(textBox: TextInputEditText) {
         textBox.setOnClickListener {
-            log.info("User: Pressed Time textbox")
+            log.info("User: Pressed Time text box to open timepicker")
             val materialTimePicker: MaterialTimePicker = MaterialTimePicker.Builder()
-                .setTitleText("Select reminder time")
-                .setHour(reminderTime.value?.first() ?: 9)
-                .setMinute(reminderTime.value?.last() ?: 0)
+                .setTitleText(getString(R.string.select_reminder_time))
+                .setHour(uiModel.reminderTime.value?.first() ?: 9)
+                .setMinute(uiModel.reminderTime.value?.last() ?: 0)
                 .setTimeFormat(TimeFormat.CLOCK_12H)
                 .build()
 
             materialTimePicker.apply {
                 show(this@CreateHabitFragment.parentFragmentManager,"MainActivity")
                 addOnPositiveButtonClickListener {
-                    reminderTime.postValue(listOf(this.hour,this.minute))
+                    log.info("USER: Pressed save on time picker")
+                    uiModel.reminderTime.postValue(listOf(this.hour,this.minute))
                 }
             }
         }
@@ -164,13 +164,13 @@ class CreateHabitFragment : Fragment() {
     }
 
     private fun setDayOfWeekObserversAndListeners() {
-        setDayOfWeekObserversAndListenerDay(binding.mon, monEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.tue, tueEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.wed, wedEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.thu, thuEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.fri, friEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.sat, satEnabled)
-        setDayOfWeekObserversAndListenerDay(binding.sun, sunEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.mon, uiModel.monEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.tue, uiModel.tueEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.wed, uiModel.wedEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.thu, uiModel.thuEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.fri, uiModel.friEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.sat, uiModel.satEnabled)
+        setDayOfWeekObserversAndListenerDay(binding.sun, uiModel.sunEnabled)
     }
 
     private fun setDayOfWeekObserversAndListenerDay(button: Button, enabled: MutableLiveData<Boolean>) {
@@ -188,26 +188,35 @@ class CreateHabitFragment : Fragment() {
     }
 
     private fun populateValues() {
+        // Pull habit from fragment args. Will be null if no args passed
         val args: CreateHabitFragmentArgs by navArgs()
         val habit = args.habit
-        if (habit == null) applyDefaultValues()
+
+        if (habit == null) {
+            requireActivity().actionBar?.title = getString(R.string.create_habit_fragment_label)
+            applyDefaultValues()
+        }
         else {
+            log.info("Changing title to ${getString(R.string.create_habit_fragment_label_edit)}")
+            requireActivity().actionBar?.title = getString(R.string.create_habit_fragment_label_edit)
+            binding.createButton.text = getString(R.string.save)
+
             log.info("Applying saved values. habit name = ${habit.habitName}")
-            habitName.postValue(habit.habitName)
-            habitDesc.postValue(habit.habitDesc)
+            uiModel.habitName.postValue(habit.habitName)
+            uiModel.habitDesc.postValue(habit.habitDesc)
             // TODO - fix hack here and set observers
             binding.habitName.editText?.setText(habit.habitName)
             binding.habitDesc.editText?.setText(habit.habitDesc)
-            streak = habit.streak
-            reminderTime.postValue(listOf(habit.notifHour, habit.notifMin))
-            viewModel.postDayValueFromString(
-                monEnabled,
-                tueEnabled,
-                wedEnabled,
-                thuEnabled,
-                friEnabled,
-                satEnabled,
-                sunEnabled,
+            uiModel.streak = habit.streak
+            uiModel.reminderTime.postValue(listOf(habit.notifHour, habit.notifMin))
+            postDayValueFromString(
+                uiModel.monEnabled,
+                uiModel.tueEnabled,
+                uiModel.wedEnabled,
+                uiModel.thuEnabled,
+                uiModel.friEnabled,
+                uiModel.satEnabled,
+                uiModel.sunEnabled,
                 daysString = habit.daysOfWeek
             )
         }
@@ -215,19 +224,19 @@ class CreateHabitFragment : Fragment() {
 
     private fun applyDefaultValues() {
         // Reset the new habit form values to the default
-        viewModel.postDayValueFalse(
-            monEnabled,
-            tueEnabled,
-            wedEnabled,
-            thuEnabled,
-            friEnabled,
-            satEnabled,
-            sunEnabled
+        postDayValueFalse(
+            uiModel.monEnabled,
+            uiModel.tueEnabled,
+            uiModel.wedEnabled,
+            uiModel.thuEnabled,
+            uiModel.friEnabled,
+            uiModel.satEnabled,
+            uiModel.sunEnabled
         )
-        reminderTime.postValue((listOf(9,0)))
-        habitDesc.postValue("")
-        habitName.postValue("")
-        streak = 0
+        uiModel.reminderTime.postValue((listOf(9,0)))
+        uiModel.habitDesc.postValue("")
+        uiModel.habitName.postValue("")
+        uiModel.streak = 0
     }
 
     override fun onDestroyView() {

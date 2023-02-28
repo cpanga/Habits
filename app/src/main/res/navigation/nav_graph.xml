@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/FirstFragment"
         android:name="com.example.habits.HabitListFragment"
-        android:label="@string/first_fragment_label"
+        android:label="@string/habit_list_fragment_label"
         tools:layout="@layout/fragment_habit_list">
 
         <action
@@ -18,7 +18,6 @@
     <fragment
         android:id="@+id/SecondFragment"
         android:name="com.example.habits.CreateHabitFragment"
-        android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_habit_create">
 
         <action
