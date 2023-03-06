@@ -1,6 +1,5 @@
 package com.example.habits
 
-import android.widget.Button
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.Navigation
 import androidx.navigation.testing.TestNavHostController
@@ -10,9 +9,11 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import junit.framework.TestCase.assertEquals
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class NavigationTest {
 
     @Test
@@ -37,7 +38,7 @@ class NavigationTest {
                     RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click() )
                 )
 
-            // assertEquals(navController.currentDestination?.id, R.id.CreateHabitFragment)
+         //    assertEquals(navController.currentDestination?.id, R.id.CreateHabitFragment)
         }
     }
 }
