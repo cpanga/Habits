@@ -1,17 +1,14 @@
 package com.example.habits
 
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.habits.database.Habit
-import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.textfield.TextInputEditText
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.`is`
@@ -40,7 +37,7 @@ class EditHabitTest {
 
         launchFragmentInContainer<CreateHabitFragment>(
             fragmentArgs = fragArgs,
-            themeResId = R.style.Theme_Habits
+            themeResId = R.style.Base_Theme_Habits
         )
 
         println("Perform clicks")
@@ -58,7 +55,6 @@ class EditHabitTest {
         onView(withId(R.id.fri)).check(matches(withAlpha(1F)))
         onView(withId(R.id.sat)).check(matches(withAlpha(1F)))
         onView(withId(R.id.sun)).check(matches(withAlpha(1F)))
-
     }
 
     @Test
@@ -127,6 +123,5 @@ class EditHabitTest {
         sleep(500)
 
         onView(withId(R.id.reminder_time)).check(matches(hasDescendant(withText("11:59 AM"))))
-
     }
 }
