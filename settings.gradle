@@ -1,16 +1,21 @@
+import org.gradle.api.initialization.resolve.RepositoriesMode
+
 pluginManagement {
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
-        jcenter()
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
         google()
         mavenCentral()
+        maven {
+            url "https://maven.google.com"
+        }
+        maven { url 'https://maven.fabric.io/public' }
     }
 }
 rootProject.name = "Habits"
