@@ -48,7 +48,7 @@ class HabitAdapter : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
     override fun onBindViewHolder(holder: HabitViewHolder, position: Int) {
         val item = habits[position]
         holder.habitName.text = item.habitName
-        holder.daysOfWeek.text = getStringFromDays(item.daysOfWeek)
+        holder.daysOfWeek.text = getStringFromDays(item.daysOfWeek, log)
         holder.streak.text = item.streak.toString()
         holder.edit.setOnClickListener {
             // TODO Hide FAB

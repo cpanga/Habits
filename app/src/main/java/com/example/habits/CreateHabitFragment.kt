@@ -224,7 +224,8 @@ class CreateHabitFragment : Fragment() {
                 uiModel.friEnabled,
                 uiModel.satEnabled,
                 uiModel.sunEnabled,
-                daysString = habit.daysOfWeek
+                daysString = habit.daysOfWeek,
+                logger = log
             )
         }
     }

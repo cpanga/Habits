@@ -1,14 +1,16 @@
 package com.example.habits.util
 
 import androidx.lifecycle.MutableLiveData
-import com.example.habits.MainActivity.Companion.log
+import java.util.logging.Logger
+import kotlin.math.min
 
-fun getStringFromDays(days: String): String {
+fun getStringFromDays(days: String, logger: Logger): String? {
 
     val dayList = listOf("Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat ", "Sun ")
 
-    // TODO do something better here
-    if (!daysStringIsValid(days)) return "Error"
+    if (!daysStringIsValid(days, logger)) return null
+
+    println("$days is vaLID?")
 
     if (days == "1111111") return "Every day"
 
@@ -26,10 +28,13 @@ fun getStringFromDays(days: String): String {
  * @param minute the time's minute
  * @return The time as a string with AM or PM
  */
-fun convertTimeToString(hour: Int, minute: Int): String {
+fun convertTimeToString(hour: Int, minute: Int): String? {
+
+    if (hour > 23 || hour < 0 || minute < 0 || minute > 59) return null
+
     val amOrPm = if (hour > 11) "PM" else "AM"
-    val adjHour = if (hour > 12) hour - 12 else hour
     val adjMin = if (minute < 10) "0$minute" else minute
+    val adjHour = if (hour > 12) hour - 12 else if (hour == 0) 12 else hour
 
     return "$adjHour:$adjMin $amOrPm"
 }
@@ -38,15 +43,15 @@ fun convertTimeToString(hour: Int, minute: Int): String {
  * Confirm that the days string is 7 digits long, and only contains 1s or 0s
  * @param days string representing which days the user has selected to
  */
-fun daysStringIsValid(days: String): Boolean {
+fun daysStringIsValid(days: String, logger: Logger): Boolean {
 
     if (days.length != 7) {
-        log.warning("More than 7 days present in the day")
+        logger.warning("${days.length} days in the day string! Should be 7.")
         return false
     }
 
-    if (days.matches("[^0-1]".toRegex())) {
-        log.warning("days string contains characters other than 0 or 1")
+    if (!days.matches("^[01]+\$".toRegex())) {
+        logger.warning("days string contains characters other than 0 or 1!")
         return false
     }
     return true
@@ -64,8 +69,12 @@ fun postDayValueFalse(vararg day: MutableLiveData<Boolean>) {
 /**
  * Parse a days string and update LiveData to match
  */
-fun postDayValueFromString(vararg day: MutableLiveData<Boolean>, daysString: String) {
-    if (daysString.length != 7) println("Not passed in 7 days - days length is ${daysString.length}")
+fun postDayValueFromString(
+    vararg day: MutableLiveData<Boolean>,
+    daysString: String,
+    logger: Logger
+) {
+    if (daysString.length != 7) logger.info("Not passed in 7 days - days length is ${daysString.length}")
     else {
         for ((index, day_) in day.withIndex()) {
             day_.postValue(daysString[index] == '1')
