@@ -15,7 +15,6 @@ import androidx.navigation.fragment.navArgs
 import com.example.habits.databinding.FragmentHabitCreateBinding
 import com.example.habits.util.convertTimeToString
 import com.example.habits.util.ensureAtLeastOneIsTrue
-import com.example.habits.util.postDayValueFalse
 import com.example.habits.util.postDayValueFromString
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -32,7 +31,7 @@ class CreateHabitFragment : Fragment() {
         val log: Logger = Logger.getLogger(CreateHabitFragment::class.java.name)
     }
 
-    private val uiModel = CreateHabitFragmentUiModel()
+    private lateinit var uiModel: CreateHabitFragmentUiModel
     private var _binding: FragmentHabitCreateBinding? = null
 
     // This property is only valid between onCreateView and
@@ -52,6 +51,8 @@ class CreateHabitFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Define uiModel as ViewModel's uiModel
+        uiModel = viewModel.createHabitUiModel
 
         populateValues()
 
@@ -91,7 +92,9 @@ class CreateHabitFragment : Fragment() {
         setOnTextChangedListeners(binding.habitName, getString(R.string.habit_name_error))
         setOnTextChangedListeners(binding.habitDesc, getString(R.string.habit_desc_error))
         setDayOfWeekObserversAndListeners()
-        setTextBoxObservers(binding.reminderTimeBox, uiModel.reminderTime)
+        setReminderTimeObserver(binding.reminderTimeBox, uiModel.reminderTime)
+        setTextBoxObserver(binding.habitName, uiModel.habitName)
+        setTextBoxObserver(binding.habitDesc, uiModel.habitDesc)
         setTimePickerBoxListener(binding.reminderTimeBox)
 
     }
@@ -121,12 +124,6 @@ class CreateHabitFragment : Fragment() {
         ).show()
     }
 
-    private fun setOnTextChangedListeners(textBox: TextInputLayout, errorText: String) {
-        textBox.editText?.doAfterTextChanged {
-            showTextBoxError(it?.trim()?.isEmpty() == true, textBox, errorText)
-            textBoxesInteractedWith = true
-        }
-    }
 
     private fun showTextBoxError(shouldShow: Boolean, textBox: TextInputLayout, errorText: String) {
         if (shouldShow) {
@@ -156,7 +153,14 @@ class CreateHabitFragment : Fragment() {
         }
     }
 
-    private fun setTextBoxObservers(
+    private fun setOnTextChangedListeners(textBox: TextInputLayout, errorText: String) {
+        textBox.editText?.doAfterTextChanged {
+            showTextBoxError(it?.trim()?.isEmpty() == true, textBox, errorText)
+            textBoxesInteractedWith = true
+        }
+    }
+
+    private fun setReminderTimeObserver(
         textBox: TextInputEditText,
         reminderTime: MutableLiveData<List<Int>>
     ) {
@@ -164,6 +168,17 @@ class CreateHabitFragment : Fragment() {
             textBox.setText(convertTimeToString(it.first(), it.last()))
         }
         reminderTime.observe(viewLifecycleOwner, textBoxObserver)
+
+    }
+
+    private fun setTextBoxObserver(
+        textBox: TextInputLayout,
+        text: MutableLiveData<String>
+    ) {
+        val textBoxObserver = Observer<String> {
+            textBox.editText?.setText(it)
+        }
+        text.observe(viewLifecycleOwner, textBoxObserver)
 
     }
 
@@ -201,7 +216,7 @@ class CreateHabitFragment : Fragment() {
 
         if (habit == null) {
             requireActivity().actionBar?.title = getString(R.string.create_habit_fragment_label)
-            applyDefaultValues()
+            viewModel.resetCreateHabitFragmentUiModel()
         } else {
             log.info("Changing title to ${getString(R.string.create_habit_fragment_label_edit)}")
             requireActivity().actionBar?.title =
@@ -209,47 +224,14 @@ class CreateHabitFragment : Fragment() {
             binding.createButton.text = getString(R.string.save)
 
             log.info("Applying saved values. habit name = ${habit.habitName}")
-            uiModel.habitName.postValue(habit.habitName)
-            uiModel.habitDesc.postValue(habit.habitDesc)
-            // TODO - fix hack here and set observers
-            binding.habitName.editText?.setText(habit.habitName)
-            binding.habitDesc.editText?.setText(habit.habitDesc)
-            uiModel.streak = habit.streak
-            uiModel.reminderTime.postValue(listOf(habit.notifHour, habit.notifMin))
-            postDayValueFromString(
-                uiModel.monEnabled,
-                uiModel.tueEnabled,
-                uiModel.wedEnabled,
-                uiModel.thuEnabled,
-                uiModel.friEnabled,
-                uiModel.satEnabled,
-                uiModel.sunEnabled,
-                daysString = habit.daysOfWeek,
-                logger = log
-            )
+            viewModel.populateUiModel(habit)
         }
-    }
-
-    private fun applyDefaultValues() {
-        // Reset the new habit form values to the default
-        postDayValueFalse(
-            uiModel.monEnabled,
-            uiModel.tueEnabled,
-            uiModel.wedEnabled,
-            uiModel.thuEnabled,
-            uiModel.friEnabled,
-            uiModel.satEnabled,
-            uiModel.sunEnabled
-        )
-        uiModel.reminderTime.postValue((listOf(9, 0)))
-        uiModel.habitDesc.postValue("")
-        uiModel.habitName.postValue("")
-        uiModel.streak = 0
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         viewModel.fabVisible.postValue(true)
+        viewModel.resetCreateHabitFragmentUiModel()
         _binding = null
     }
 }

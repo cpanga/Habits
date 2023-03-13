@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habits.database.Habit
@@ -23,7 +24,6 @@ class HabitAdapter : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
     private val hab0 = Habit(1, "Habit 1", "Description", "1101011", 0, 22, 0)
     private val hab1 = Habit(1, "Habit 2", "Description", "1010011", 18, 45, 5)
     private val hab2 = Habit(1, "Habit 3", "Description", "1111111", 22, 0, 2)
-
     private val habits = listOf(hab0, hab1, hab2)
 
     // Create ViewHolder class

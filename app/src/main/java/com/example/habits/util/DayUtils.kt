@@ -10,8 +10,6 @@ fun getStringFromDays(days: String, logger: Logger): String? {
 
     if (!daysStringIsValid(days, logger)) return null
 
-    println("$days is vaLID?")
-
     if (days == "1111111") return "Every day"
 
     var str = ""
@@ -54,6 +52,7 @@ fun daysStringIsValid(days: String, logger: Logger): Boolean {
         logger.warning("days string contains characters other than 0 or 1!")
         return false
     }
+    logger.info("day string $days is valid!")
     return true
 }
 
