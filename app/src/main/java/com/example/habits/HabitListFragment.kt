@@ -8,11 +8,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habits.databinding.FragmentHabitListBinding
+import java.util.logging.Logger
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class HabitListFragment : Fragment() {
+    companion object {
+        val log: Logger = Logger.getLogger(HabitListFragment::class.java.name)
+    }
 
     private var _binding: FragmentHabitListBinding? = null
     private val viewModel: MainActivityViewModel by activityViewModels()
@@ -33,9 +37,14 @@ class HabitListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerView.run {
-            adapter = HabitAdapter { viewModel.fabVisible.postValue(false) }
+            adapter = HabitAdapter { hideFab() }
             layoutManager = LinearLayoutManager(context)
         }
+    }
+
+    private fun hideFab() {
+        log.info("Hiding FAB")
+        viewModel.fabVisible.postValue(false)
     }
 
     override fun onDestroyView() {

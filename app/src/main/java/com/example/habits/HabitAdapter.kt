@@ -14,7 +14,8 @@ import java.util.logging.Logger
 /**
  * Adapter for the [RecyclerView] in [HabitListFragment].
  */
-class HabitAdapter(private var hideFab: (() -> Unit)) : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
+class HabitAdapter(private var hideFab: (() -> Unit)) :
+    RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
     companion object {
         val log: Logger = Logger.getLogger(HabitAdapter::class.java.name)
     }
@@ -50,9 +51,8 @@ class HabitAdapter(private var hideFab: (() -> Unit)) : RecyclerView.Adapter<Hab
         holder.daysOfWeek.text = getStringFromDays(item.daysOfWeek, log)
         holder.streak.text = item.streak.toString()
         holder.edit.setOnClickListener {
-            // Callback function to hide FAB when pressed
-            hideFab()
             log.info("USER: Clicked edit button on habit: ${item.habitName}, position: $position")
+            hideFab()
             val action = HabitListFragmentDirections.actionFirstFragmentToSecondFragment(item)
             holder.itemView.findNavController().navigate(action)
         }

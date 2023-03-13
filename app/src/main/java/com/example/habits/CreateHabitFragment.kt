@@ -54,7 +54,6 @@ class CreateHabitFragment : Fragment() {
         uiModel = viewModel.createHabitUiModel
 
         populateValues()
-        log.info("name: ${uiModel.nameTextInteractedWith.value}, desc: ${uiModel.descTextInteractedWith.value}")
 
         binding.createButton.setOnClickListener {
             log.info("USER: ${binding.createButton.text} button pressed")
@@ -87,7 +86,6 @@ class CreateHabitFragment : Fragment() {
 
         // Set UI observers and listeners
         log.info("Set Observers and Listeners")
-        log.info("is interacted with? name:${uiModel.nameTextInteractedWith.value}, desc:${uiModel.descTextInteractedWith.value}")
         setOnTextChangedListeners(
             binding.habitName,
             getString(R.string.habit_name_error),
@@ -151,13 +149,12 @@ class CreateHabitFragment : Fragment() {
         textBox: TextInputLayout, errorText: String, interactedWith: MutableLiveData<Boolean>
     ) {
         textBox.editText?.doAfterTextChanged {
-            log.info("@@@ doaftertextchanged called for ${textBox}")
             if (interactedWith.value == true) {
-                log.info("textbox $errorText has been interacted with? ${interactedWith.value}")
                 showTextBoxError(
                     it?.trim()?.isEmpty() == true, interactedWith.value == true, textBox, errorText
                 )
-            } else {
+            } else if (textBox.editText?.text?.isNotEmpty() == true) {
+                log.info("textBox $textBox has been interacted with. Setting flag")
                 interactedWith.postValue(true)
             }
         }
