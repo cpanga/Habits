@@ -8,6 +8,7 @@ import android.widget.Button
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -38,12 +39,10 @@ class CreateHabitFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
     private val viewModel: MainActivityViewModel by activityViewModels()
-    private var textBoxesInteractedWith: Boolean = false
 
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHabitCreateBinding.inflate(inflater, container, false)
         return binding.root
@@ -58,10 +57,6 @@ class CreateHabitFragment : Fragment() {
 
         binding.createButton.setOnClickListener {
             log.info("USER: ${binding.createButton.text} button pressed")
-            val habitNameEmpty = binding.habitName.editText?.text?.trim()?.isEmpty() == true
-            val habitDescEmpty = binding.habitDesc.editText?.text?.trim()?.isEmpty() == true
-
-            checkTextBoxErrors(habitNameEmpty, habitDescEmpty)
 
             // If there are errors with the text box inputs, log and cancel saving
             if ((binding.habitName.error != null) || (binding.habitDesc.error != null)) {
@@ -69,6 +64,7 @@ class CreateHabitFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            // Check that at least one day is selected. If not, show error snackbar
             if (!ensureAtLeastOneIsTrue(
                     uiModel.monEnabled,
                     uiModel.tueEnabled,
@@ -88,32 +84,24 @@ class CreateHabitFragment : Fragment() {
             }
         }
 
+        // Set UI observers and listeners
         log.info("Set Observers and Listeners")
-        setOnTextChangedListeners(binding.habitName, getString(R.string.habit_name_error))
-        setOnTextChangedListeners(binding.habitDesc, getString(R.string.habit_desc_error))
+        setOnTextChangedListeners(
+            binding.habitName,
+            getString(R.string.habit_name_error),
+            uiModel.nameTextInteractedWith
+        )
+        setOnTextChangedListeners(
+            binding.habitDesc,
+            getString(R.string.habit_desc_error),
+            uiModel.descTextInteractedWith
+        )
         setDayOfWeekObserversAndListeners()
         setReminderTimeObserver(binding.reminderTimeBox, uiModel.reminderTime)
         setTextBoxObserver(binding.habitName, uiModel.habitName)
         setTextBoxObserver(binding.habitDesc, uiModel.habitDesc)
         setTimePickerBoxListener(binding.reminderTimeBox)
 
-    }
-
-    private fun checkTextBoxErrors(habitNameEmpty: Boolean, habitDescEmpty: Boolean) {
-        if (!textBoxesInteractedWith && (habitNameEmpty || habitDescEmpty)) {
-            log.info("Text boxes have not been interacted with. Flag errors")
-
-            showTextBoxError(
-                habitNameEmpty,
-                binding.habitName,
-                getString(R.string.habit_name_error)
-            )
-            showTextBoxError(
-                habitDescEmpty,
-                binding.habitDesc,
-                getString(R.string.habit_desc_error)
-            )
-        }
     }
 
     private fun createNoDaysSelectedSnackbar() {
@@ -125,8 +113,14 @@ class CreateHabitFragment : Fragment() {
     }
 
 
-    private fun showTextBoxError(shouldShow: Boolean, textBox: TextInputLayout, errorText: String) {
-        if (shouldShow) {
+    private fun showTextBoxError(
+        shouldShow: Boolean,
+        textBoxInteractedWith: Boolean,
+        textBox: TextInputLayout,
+        errorText: String
+    ) {
+        if (shouldShow && textBoxInteractedWith) {
+            log.info("Show error for $textBox: $errorText")
             textBox.error = errorText
         } else {
             textBox.error = null
@@ -136,12 +130,11 @@ class CreateHabitFragment : Fragment() {
     private fun setTimePickerBoxListener(textBox: TextInputEditText) {
         textBox.setOnClickListener {
             log.info("User: Pressed Time text box to open timepicker")
-            val materialTimePicker: MaterialTimePicker = MaterialTimePicker.Builder()
-                .setTitleText(getString(R.string.select_reminder_time))
-                .setHour(uiModel.reminderTime.value?.first() ?: 9)
-                .setMinute(uiModel.reminderTime.value?.last() ?: 0)
-                .setTimeFormat(TimeFormat.CLOCK_12H)
-                .build()
+            val materialTimePicker: MaterialTimePicker =
+                MaterialTimePicker.Builder().setTitleText(getString(R.string.select_reminder_time))
+                    .setHour(uiModel.reminderTime.value?.first() ?: 9)
+                    .setMinute(uiModel.reminderTime.value?.last() ?: 0)
+                    .setTimeFormat(TimeFormat.CLOCK_12H).build()
 
             materialTimePicker.apply {
                 show(this@CreateHabitFragment.parentFragmentManager, "MainActivity")
@@ -153,16 +146,20 @@ class CreateHabitFragment : Fragment() {
         }
     }
 
-    private fun setOnTextChangedListeners(textBox: TextInputLayout, errorText: String) {
+    private fun setOnTextChangedListeners(
+        textBox: TextInputLayout, errorText: String, interactedWith: MutableLiveData<Boolean>
+    ) {
         textBox.editText?.doAfterTextChanged {
-            showTextBoxError(it?.trim()?.isEmpty() == true, textBox, errorText)
-            textBoxesInteractedWith = true
+            if (interactedWith.value == true) {
+                showTextBoxError(
+                    it?.trim()?.isEmpty() == true, interactedWith.value == true, textBox, errorText
+                )
+            } else interactedWith.postValue(true)
         }
     }
 
     private fun setReminderTimeObserver(
-        textBox: TextInputEditText,
-        reminderTime: MutableLiveData<List<Int>>
+        textBox: TextInputEditText, reminderTime: MutableLiveData<List<Int>>
     ) {
         val textBoxObserver = Observer<List<Int>> {
             textBox.setText(convertTimeToString(it.first(), it.last()))
@@ -172,8 +169,7 @@ class CreateHabitFragment : Fragment() {
     }
 
     private fun setTextBoxObserver(
-        textBox: TextInputLayout,
-        text: MutableLiveData<String>
+        textBox: TextInputLayout, text: MutableLiveData<String>
     ) {
         val textBoxObserver = Observer<String> {
             textBox.editText?.setText(it)
@@ -193,8 +189,7 @@ class CreateHabitFragment : Fragment() {
     }
 
     private fun setDayOfWeekObserversAndListenerDay(
-        button: Button,
-        enabled: MutableLiveData<Boolean>
+        button: Button, enabled: MutableLiveData<Boolean>
     ) {
         val fabObserver = Observer<Boolean> {
             if (enabled.value != false) button.apply {
@@ -215,6 +210,7 @@ class CreateHabitFragment : Fragment() {
         val habit = args.habit
 
         if (habit == null) {
+            // No args passed in, populate fragment with default values
             requireActivity().actionBar?.title = getString(R.string.create_habit_fragment_label)
             viewModel.resetCreateHabitFragmentUiModel()
         } else {

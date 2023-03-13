@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.fab.setOnClickListener {
-            log.info("USER: Clicked FAB, moving to")
+            log.info("USER: Clicked FAB, moving to ${navController.currentDestination}")
             navController.navigate(R.id.action_FirstFragment_to_SecondFragment)
             viewModel.fabVisible.postValue(false)
         }

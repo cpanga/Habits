@@ -15,7 +15,6 @@ class MainActivityViewModel(application: Application) : ViewModel() {
     val fabVisible = MutableLiveData<Boolean>().apply { postValue(true) }
 
     private val _createHabitUiModel = CreateHabitFragmentUiModel()
-
     val createHabitUiModel: CreateHabitFragmentUiModel
         get() = _createHabitUiModel
 
@@ -39,6 +38,7 @@ class MainActivityViewModel(application: Application) : ViewModel() {
         }
     }
 
+    // Reset all
     fun resetCreateHabitFragmentUiModel() {
             // Reset the new habit form values to the default
             postDayValueFalse(
@@ -48,7 +48,9 @@ class MainActivityViewModel(application: Application) : ViewModel() {
                 _createHabitUiModel.thuEnabled,
                 _createHabitUiModel.friEnabled,
                 _createHabitUiModel.satEnabled,
-                _createHabitUiModel.sunEnabled
+                _createHabitUiModel.sunEnabled,
+                _createHabitUiModel.nameTextInteractedWith,
+                _createHabitUiModel.descTextInteractedWith
             )
         _createHabitUiModel.run {
             reminderTime.postValue((listOf(9, 0)))

@@ -16,4 +16,7 @@ class CreateHabitFragmentUiModel {
     var streak: Int = 0
     val habitName = MutableLiveData<String>()
     val habitDesc = MutableLiveData<String>()
+
+    val nameTextInteractedWith = MutableLiveData<Boolean>().apply { postValue(false) }
+    val descTextInteractedWith = MutableLiveData<Boolean>().apply { postValue(false) }
 }
