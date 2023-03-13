@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habits.databinding.FragmentHabitListBinding
 
@@ -14,6 +15,7 @@ import com.example.habits.databinding.FragmentHabitListBinding
 class HabitListFragment : Fragment() {
 
     private var _binding: FragmentHabitListBinding? = null
+    private val viewModel: MainActivityViewModel by activityViewModels()
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
@@ -31,7 +33,7 @@ class HabitListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerView.run {
-            adapter = HabitAdapter()
+            adapter = HabitAdapter { viewModel.fabVisible.postValue(false) }
             layoutManager = LinearLayoutManager(context)
         }
     }

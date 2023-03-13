@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habits.database.Habit
@@ -15,7 +14,7 @@ import java.util.logging.Logger
 /**
  * Adapter for the [RecyclerView] in [HabitListFragment].
  */
-class HabitAdapter : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
+class HabitAdapter(private var hideFab: (() -> Unit)) : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
     companion object {
         val log: Logger = Logger.getLogger(HabitAdapter::class.java.name)
     }
@@ -51,7 +50,8 @@ class HabitAdapter : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
         holder.daysOfWeek.text = getStringFromDays(item.daysOfWeek, log)
         holder.streak.text = item.streak.toString()
         holder.edit.setOnClickListener {
-            // TODO Hide FAB
+            // Callback function to hide FAB when pressed
+            hideFab()
             log.info("USER: Clicked edit button on habit: ${item.habitName}, position: $position")
             val action = HabitListFragmentDirections.actionFirstFragmentToSecondFragment(item)
             holder.itemView.findNavController().navigate(action)

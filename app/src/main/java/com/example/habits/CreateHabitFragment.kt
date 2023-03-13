@@ -54,6 +54,7 @@ class CreateHabitFragment : Fragment() {
         uiModel = viewModel.createHabitUiModel
 
         populateValues()
+        log.info("name: ${uiModel.nameTextInteractedWith.value}, desc: ${uiModel.descTextInteractedWith.value}")
 
         binding.createButton.setOnClickListener {
             log.info("USER: ${binding.createButton.text} button pressed")
@@ -86,6 +87,7 @@ class CreateHabitFragment : Fragment() {
 
         // Set UI observers and listeners
         log.info("Set Observers and Listeners")
+        log.info("is interacted with? name:${uiModel.nameTextInteractedWith.value}, desc:${uiModel.descTextInteractedWith.value}")
         setOnTextChangedListeners(
             binding.habitName,
             getString(R.string.habit_name_error),
@@ -111,7 +113,6 @@ class CreateHabitFragment : Fragment() {
             Snackbar.LENGTH_LONG
         ).show()
     }
-
 
     private fun showTextBoxError(
         shouldShow: Boolean,
@@ -150,11 +151,15 @@ class CreateHabitFragment : Fragment() {
         textBox: TextInputLayout, errorText: String, interactedWith: MutableLiveData<Boolean>
     ) {
         textBox.editText?.doAfterTextChanged {
+            log.info("@@@ doaftertextchanged called for ${textBox}")
             if (interactedWith.value == true) {
+                log.info("textbox $errorText has been interacted with? ${interactedWith.value}")
                 showTextBoxError(
                     it?.trim()?.isEmpty() == true, interactedWith.value == true, textBox, errorText
                 )
-            } else interactedWith.postValue(true)
+            } else {
+                interactedWith.postValue(true)
+            }
         }
     }
 
@@ -210,7 +215,7 @@ class CreateHabitFragment : Fragment() {
         val habit = args.habit
 
         if (habit == null) {
-            // No args passed in, populate fragment with default values
+            log.info("No args passed in, populate fragment with default values")
             requireActivity().actionBar?.title = getString(R.string.create_habit_fragment_label)
             viewModel.resetCreateHabitFragmentUiModel()
         } else {

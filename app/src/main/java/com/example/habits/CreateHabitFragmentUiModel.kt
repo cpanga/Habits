@@ -17,6 +17,7 @@ class CreateHabitFragmentUiModel {
     val habitName = MutableLiveData<String>()
     val habitDesc = MutableLiveData<String>()
 
+    // Track if text boxes have been interacted with
     val nameTextInteractedWith = MutableLiveData<Boolean>().apply { postValue(false) }
     val descTextInteractedWith = MutableLiveData<Boolean>().apply { postValue(false) }
 }
