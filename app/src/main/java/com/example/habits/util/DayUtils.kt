@@ -1,6 +1,7 @@
 package com.example.habits.util
 
 import androidx.lifecycle.MutableLiveData
+import com.google.android.material.textfield.TextInputLayout
 import java.util.logging.Logger
 import kotlin.math.min
 
@@ -86,6 +87,10 @@ fun ensureAtLeastOneIsTrue(vararg day: MutableLiveData<Boolean>): Boolean {
         if (day_.value == true) return true
     }
     return false
+}
+
+fun isTextBoxEmpty(textBox: TextInputLayout): Boolean {
+    return textBox.editText?.text?.trim()?.isEmpty() == true
 }
 
 

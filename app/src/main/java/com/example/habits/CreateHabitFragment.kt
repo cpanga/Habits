@@ -14,9 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.habits.databinding.FragmentHabitCreateBinding
-import com.example.habits.util.convertTimeToString
-import com.example.habits.util.ensureAtLeastOneIsTrue
-import com.example.habits.util.postDayValueFromString
+import com.example.habits.util.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -40,7 +38,6 @@ class CreateHabitFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: MainActivityViewModel by activityViewModels()
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -56,7 +53,20 @@ class CreateHabitFragment : Fragment() {
         populateValues()
 
         binding.createButton.setOnClickListener {
+            // Check that there is text in both text boxes before saving
             log.info("USER: ${binding.createButton.text} button pressed")
+
+            checkTextBoxErrors(
+                binding.habitName,
+                getString(R.string.habit_name_error),
+                uiModel.nameTextInteractedWith.apply { value = true }
+            )
+            checkTextBoxErrors(
+                binding.habitDesc,
+                getString(R.string.habit_desc_error),
+                uiModel.descTextInteractedWith.apply { value = true }
+            )
+
 
             // If there are errors with the text box inputs, log and cancel saving
             if ((binding.habitName.error != null) || (binding.habitDesc.error != null)) {
@@ -149,15 +159,26 @@ class CreateHabitFragment : Fragment() {
         textBox: TextInputLayout, errorText: String, interactedWith: MutableLiveData<Boolean>
     ) {
         textBox.editText?.doAfterTextChanged {
-            if (interactedWith.value == true) {
-                showTextBoxError(
-                    it?.trim()?.isEmpty() == true, interactedWith.value == true, textBox, errorText
-                )
-            } else if (textBox.editText?.text?.isNotEmpty() == true) {
-                log.info("textBox $textBox has been interacted with. Setting flag")
-                interactedWith.postValue(true)
-            }
+            checkTextBoxErrors(textBox, errorText, interactedWith)
         }
+    }
+
+    private fun checkTextBoxErrors(
+        textBox: TextInputLayout,
+        errorText: String,
+        interactedWith: MutableLiveData<Boolean>
+    ) {
+        val textBoxEmpty = isTextBoxEmpty(textBox)
+        println("@@@ INTERACTED WITH IS ${interactedWith.value}")
+        if (interactedWith.value == true) {
+            showTextBoxError(
+                textBoxEmpty, interactedWith.value == true, textBox, errorText
+            )
+        } else if (!textBoxEmpty) {
+            log.info("textBox $textBox has been interacted with. Setting flag")
+            interactedWith.postValue(true)
+        }
+
     }
 
     private fun setReminderTimeObserver(
