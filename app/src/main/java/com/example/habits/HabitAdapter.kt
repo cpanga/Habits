@@ -1,5 +1,6 @@
 package com.example.habits
 
+import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,7 +54,10 @@ class HabitAdapter(private var hideFab: (() -> Unit)) :
         holder.edit.setOnClickListener {
             log.info("USER: Clicked edit button on habit: ${item.habitName}, position: $position")
             hideFab()
-            val action = HabitListFragmentDirections.actionFirstFragmentToSecondFragment(item)
+            val action = HabitListFragmentDirections.actionFirstFragmentToSecondFragment(
+                habit = item,
+                fragmentTitle = "Edit your Habit"
+            )
             holder.itemView.findNavController().navigate(action)
         }
     }

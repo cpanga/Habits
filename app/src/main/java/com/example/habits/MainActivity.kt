@@ -67,6 +67,8 @@ class MainActivity : AppCompatActivity() {
             else binding.fab.hide()
         }
         viewModel.fabVisible.observe(this, fabObserver)
+
+        setupActionBarWithNavController(navController)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

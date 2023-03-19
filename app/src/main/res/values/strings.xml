@@ -24,4 +24,5 @@
     <string name="habit_desc_error">Please enter a description for your new habit</string>
     <string name="select_at_least_one_day">Please select at least one day of the week</string>
     <string name="select_reminder_time">Select reminder time</string>
+    <string name="edit_your_habit">Edit your Habit</string>
 </resources>
