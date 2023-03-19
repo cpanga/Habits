@@ -32,29 +32,19 @@
         android:textColor="@color/md_theme_light_onPrimary"
         tools:text="Habit Name" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/recycler_habit_streak"
+        android:padding="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
+        android:textSize="22sp"
+        android:textColor="@color/md_theme_light_onPrimary"
+        tools:text="15"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/recycler_edit">
-
-        <TextView
-            android:id="@+id/recycler_habit_streak"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:textColor="@color/md_theme_light_onPrimary"
-            tools:text="15"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_local_fire_department_24"
-            app:tint="@color/md_theme_light_secondaryContainer"
-            android:layout_gravity="center_vertical"/>
-    </LinearLayout>
+        app:layout_constraintEnd_toStartOf="@id/recycler_edit"
+        app:drawableRightCompat="@drawable/baseline_local_fire_department_24"
+        app:drawableTint="@color/md_theme_light_secondaryContainer" />
 
     <Button
         android:id="@+id/recycler_edit"
@@ -68,6 +58,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:icon="@drawable/baseline_edit_24"
         app:tint="@color/md_theme_light_onPrimary"
-        style="@style/Widget.Material3.Button.IconButton.Outlined"/>
+        style="@style/Habit.Outlined"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Habit.Outlined" parent="Widget.Material3.Button.IconButton.Outlined" >
+        <item name="strokeColor">@color/edit_button_selector</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="iconTint">@color/edit_button_tint</item>
+        <item name="backgroundTint">@color/edit_background_tint</item>
+    </style>
+</resources>
