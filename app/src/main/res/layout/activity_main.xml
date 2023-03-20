@@ -28,10 +28,10 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
-        app:srcCompat="@drawable/baseline_add_task_24"
+        android:contentDescription="@string/create_a_new_habit"
         app:backgroundTint="@color/md_theme_dark_primaryContainer"
         app:rippleColor="@color/md_theme_dark_secondary"
-        app:tint="@color/md_theme_light_primaryContainer"
-        android:contentDescription="@string/create_a_new_habit" />
+        app:srcCompat="@drawable/baseline_add_task_24"
+        app:tint="@color/md_theme_light_primaryContainer" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

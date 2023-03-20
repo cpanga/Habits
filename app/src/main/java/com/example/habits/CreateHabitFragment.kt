@@ -169,7 +169,6 @@ class CreateHabitFragment : Fragment() {
         interactedWith: MutableLiveData<Boolean>
     ) {
         val textBoxEmpty = isTextBoxEmpty(textBox)
-        println("@@@ INTERACTED WITH IS ${interactedWith.value}")
         if (interactedWith.value == true) {
             showTextBoxError(
                 textBoxEmpty, interactedWith.value == true, textBox, errorText
@@ -236,12 +235,15 @@ class CreateHabitFragment : Fragment() {
             log.info("No args passed in, populate fragment with default values")
             requireActivity().actionBar?.title = getString(R.string.create_habit_fragment_label)
             viewModel.resetCreateHabitFragmentUiModel()
+            binding.habitName.editText?.setSelectAllOnFocus(false)
+            binding.habitDesc.editText?.setSelectAllOnFocus(false)
         } else {
             log.info("Changing title to ${getString(R.string.create_habit_fragment_label_edit)}")
             requireActivity().actionBar?.title =
                 getString(R.string.create_habit_fragment_label_edit)
             binding.createButton.text = getString(R.string.save)
-
+            binding.habitName.editText?.setSelectAllOnFocus(true)
+            binding.habitDesc.editText?.setSelectAllOnFocus(true)
             log.info("Applying saved values. habit name = ${habit.habitName}")
             viewModel.populateUiModel(habit)
         }
