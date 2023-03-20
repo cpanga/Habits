@@ -54,6 +54,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'
     androidTestImplementation 'androidx.navigation:navigation-testing:2.5.3'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
     implementation 'androidx.core:core-splashscreen:1.0.0'
 
     debugImplementation 'androidx.fragment:fragment-testing:1.5.5'
