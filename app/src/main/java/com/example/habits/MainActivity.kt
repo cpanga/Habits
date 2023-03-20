@@ -1,18 +1,18 @@
 package com.example.habits
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
-import com.example.habits.database.Habit
 import com.example.habits.database.HabitDatabase
 import com.example.habits.databinding.ActivityMainBinding
 import java.util.logging.Logger
@@ -29,33 +29,36 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
+        // Create database
         val db = Room.databaseBuilder(
-            applicationContext,
-            HabitDatabase::class.java, "habit-database"
+            applicationContext, HabitDatabase::class.java, "habit-database"
         ).build()
 
         // db.habitDao().insertAll(hab)
 
+        // Instantiate view model
         val viewModel: MainActivityViewModel by lazy {
             val activity = requireNotNull(this) {
                 "You can only access the viewModel after onActivityCreated()"
             }
             ViewModelProvider(
-                this,
-                MainActivityViewModel.Factory(activity.application)
+                this, MainActivityViewModel.Factory(activity.application)
             )[MainActivityViewModel::class.java]
         }
-        // val viewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        // Find navController using supportFragmentManager, as it is a FragmentContainerView
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
+        val navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
+        binding.fab
         binding.fab.setOnClickListener {
             log.info("USER: Clicked FAB, moving to ${navController.currentDestination}")
             navController.navigate(R.id.action_FirstFragment_to_SecondFragment)
@@ -89,7 +92,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 }

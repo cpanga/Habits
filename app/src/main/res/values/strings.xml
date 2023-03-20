@@ -25,4 +25,5 @@
     <string name="select_at_least_one_day">Please select at least one day of the week</string>
     <string name="select_reminder_time">Select reminder time</string>
     <string name="edit_your_habit">Edit your Habit</string>
+    <string name="create_a_new_habit">Create a new Habit</string>
 </resources>
