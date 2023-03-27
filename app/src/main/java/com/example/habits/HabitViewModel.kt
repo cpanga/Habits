@@ -1,19 +1,26 @@
 package com.example.habits
 
-import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.habits.database.Habit
+import com.example.habits.database.HabitDao
 import com.example.habits.util.postDayValueFalse
 import com.example.habits.util.postDayValueFromString
+import kotlinx.coroutines.flow.Flow
 
-class MainActivityViewModel(application: Application) : ViewModel() {
+class HabitViewModel(private val dao: HabitDao) : ViewModel() {
 
-//    private val habitRepository = HabitRepository(getDatabase(application))
+    fun getAllHabits(): Flow<List<Habit>> = dao.getAll()
+    fun updateHabit(habit: Habit) = dao.updateHabit(habit)
+    fun deleteHabit(habit: Habit) = dao.delete(habit)
+
+    // TODO decide how to use repository
+    // private val habitRepository = HabitRepository(getDatabase(application))
 
     val fabVisible = MutableLiveData<Boolean>().apply { postValue(true) }
 
+    // UI Model for holding data for CreateHabitFragment
     private val _createHabitUiModel = CreateHabitFragmentUiModel()
     val createHabitUiModel: CreateHabitFragmentUiModel
         get() = _createHabitUiModel
@@ -63,11 +70,11 @@ class MainActivityViewModel(application: Application) : ViewModel() {
     /**
      * Factory for constructing Viewmodel with parameter
      */
-    class Factory(val app: Application) : ViewModelProvider.Factory {
+    class HabitViewModelFactory(private val habitDao: HabitDao) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(MainActivityViewModel::class.java)) {
+            if (modelClass.isAssignableFrom(HabitViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return MainActivityViewModel(app) as T
+                return HabitViewModel(habitDao) as T
             }
             throw IllegalArgumentException("Unable to construct viewmodel")
         }

@@ -6,8 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habits.databinding.FragmentHabitListBinding
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.logging.Logger
 
 /**
@@ -19,7 +23,11 @@ class HabitListFragment : Fragment() {
     }
 
     private var _binding: FragmentHabitListBinding? = null
-    private val viewModel: MainActivityViewModel by activityViewModels()
+    private val viewModel: HabitViewModel by activityViewModels {
+        HabitViewModel.HabitViewModelFactory(
+            (activity?.application as HabitApplication).database.habitDao()
+        )
+    }
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
@@ -36,9 +44,15 @@ class HabitListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val habitAdapter = HabitListAdapter { hideFab() }
         binding.recyclerView.run {
-            adapter = HabitAdapter { hideFab() }
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = habitAdapter
+        }
+        lifecycle.coroutineScope.launch {
+            viewModel.getAllHabits().collect() {
+                habitAdapter.submitList(it)
+            }
         }
     }
 

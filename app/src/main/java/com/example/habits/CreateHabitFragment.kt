@@ -8,7 +8,6 @@ import android.widget.Button
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -36,7 +35,11 @@ class CreateHabitFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private val viewModel: MainActivityViewModel by activityViewModels()
+    private val viewModel: HabitViewModel by activityViewModels {
+        HabitViewModel.HabitViewModelFactory(
+            (activity?.application as HabitApplication).database.habitDao()
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

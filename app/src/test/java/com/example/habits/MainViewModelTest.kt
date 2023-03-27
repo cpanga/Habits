@@ -18,7 +18,7 @@ class ViewModelTests {
 
     @Test
     fun quantity_twelve_cupcakes() {
-        val viewModel = MainActivityViewModel(application)
+        val viewModel = HabitViewModel(application)
         viewModel.fabVisible.postValue(false)
         assertEquals(false, viewModel.fabVisible.value)
     }

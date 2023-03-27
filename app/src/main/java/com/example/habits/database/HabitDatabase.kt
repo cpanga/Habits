@@ -9,17 +9,21 @@ import androidx.room.RoomDatabase
 @androidx.room.TypeConverters(Converters::class)
 abstract class HabitDatabase: RoomDatabase() {
     abstract fun habitDao(): HabitDao
-}
 
-private lateinit var INSTANCE: HabitDatabase
+    companion object {
+        @Volatile
+        private var INSTANCE: HabitDatabase? = null
+        fun getDatabase(context: Context): HabitDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context,
+                    HabitDatabase::class.java,
+                    "app_database"
+                ).build()
+                INSTANCE = instance
 
-fun getDatabase(context: Context): HabitDatabase {
-    synchronized(HabitDatabase::class.java) {
-        if (!::INSTANCE.isInitialized) {
-            INSTANCE = Room.databaseBuilder(context.applicationContext,
-                HabitDatabase::class.java,
-                "habits").build()
+                instance
+            }
         }
     }
-    return INSTANCE
 }

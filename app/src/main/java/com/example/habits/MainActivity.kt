@@ -38,14 +38,15 @@ class MainActivity : AppCompatActivity() {
 
         // db.habitDao().insertAll(hab)
 
-        // Instantiate view model
-        val viewModel: MainActivityViewModel by lazy {
+        // Instantiate viewModel using a Factory
+        val viewModel: HabitViewModel by lazy {
             val activity = requireNotNull(this) {
                 "You can only access the viewModel after onActivityCreated()"
             }
             ViewModelProvider(
-                this, MainActivityViewModel.Factory(activity.application)
-            )[MainActivityViewModel::class.java]
+                this,
+                HabitViewModel.HabitViewModelFactory((activity.application as HabitApplication).database.habitDao())
+            )[HabitViewModel::class.java]
         }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
