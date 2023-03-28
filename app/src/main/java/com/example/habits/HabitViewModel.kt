@@ -7,13 +7,16 @@ import com.example.habits.database.Habit
 import com.example.habits.database.HabitDao
 import com.example.habits.util.postDayValueFalse
 import com.example.habits.util.postDayValueFromString
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 class HabitViewModel(private val dao: HabitDao) : ViewModel() {
 
     fun getAllHabits(): Flow<List<Habit>> = dao.getAll()
-    fun updateHabit(habit: Habit) = dao.updateHabit(habit)
+    suspend fun updateHabit(habit: Habit) =  withContext(Dispatchers.IO) {dao.updateHabit(habit) }
     fun deleteHabit(habit: Habit) = dao.delete(habit)
+    suspend fun createHabit(habit: Habit) = withContext(Dispatchers.IO) { dao.insertAll(habit) }
 
     // TODO decide how to use repository
     // private val habitRepository = HabitRepository(getDatabase(application))

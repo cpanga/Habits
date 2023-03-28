@@ -8,7 +8,7 @@ import androidx.room.*
 
 @Entity
 data class Habit(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true) val uid: Int,
     @ColumnInfo(name = "habit_name") val habitName: String,
     @ColumnInfo(name = "habit_desc") val habitDesc: String,
     @ColumnInfo(name = "days_of_week") val daysOfWeek: String,

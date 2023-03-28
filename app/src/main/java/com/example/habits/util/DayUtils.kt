@@ -82,6 +82,23 @@ fun postDayValueFromString(
     }
 }
 
+/**
+ * Convert a list of Booleans in to a days string
+ */
+fun convertDaysToString(days: List<Boolean>, logger: Logger): String {
+    if (days.size != 7) logger.info("Not passed in 7 days - days size is ${days.size}. Do something about this!")
+    var dayString = ""
+    for (day in days) {
+        dayString = addOneOrZero(day, dayString)
+    }
+    return dayString
+}
+
+private fun addOneOrZero(day: Boolean, dayString: String): String {
+    return dayString + if (day) "1" else "0"
+}
+
+
 fun ensureAtLeastOneIsTrue(vararg day: MutableLiveData<Boolean>): Boolean {
     for (day_ in day) {
         if (day_.value == true) return true

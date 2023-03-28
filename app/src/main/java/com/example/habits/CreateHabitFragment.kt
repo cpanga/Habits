@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.coroutineScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.habits.databinding.FragmentHabitCreateBinding
@@ -19,6 +20,9 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 
 /**
@@ -30,6 +34,7 @@ class CreateHabitFragment : Fragment() {
     }
 
     private lateinit var uiModel: CreateHabitFragmentUiModel
+    private lateinit var createOrEdit: CreateOrEdit
     private var _binding: FragmentHabitCreateBinding? = null
 
     // This property is only valid between onCreateView and
@@ -53,6 +58,7 @@ class CreateHabitFragment : Fragment() {
         // Define uiModel as ViewModel's uiModel
         uiModel = viewModel.createHabitUiModel
 
+        // Populate the fragment's values with defaults, or with the values passed in if editing a Habit
         populateValues()
 
         binding.createButton.setOnClickListener {
@@ -92,7 +98,23 @@ class CreateHabitFragment : Fragment() {
                 createNoDaysSelectedSnackbar()
             } else {
                 log.info("Saving habit")
-                // TODO save habit
+                uiModel.habitName.value = binding.habitName.editText!!.text.toString()
+                uiModel.habitDesc.value = binding.habitDesc.editText!!.text.toString()
+                val habit = uiModel.returnAsHabit()
+                lifecycle.coroutineScope.launch() {
+                    when (createOrEdit) {
+                        CreateOrEdit.EDIT -> {
+                            log.info("Saving changes to habit: '${habit.habitName}'")
+                            viewModel.updateHabit(habit)
+                        }
+                        CreateOrEdit.CREATE -> {
+                            log.info("Creating new habit: '${habit.habitName}'")
+                            viewModel.createHabit(uiModel.returnAsHabit())
+                        }
+
+                    }
+                }
+                // Navigate back to list fragment
                 findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
             }
         }
@@ -235,12 +257,14 @@ class CreateHabitFragment : Fragment() {
         val habit = args.habit
 
         if (habit == null) {
+            createOrEdit = CreateOrEdit.CREATE
             log.info("No args passed in, populate fragment with default values")
             requireActivity().actionBar?.title = getString(R.string.create_habit_fragment_label)
             viewModel.resetCreateHabitFragmentUiModel()
             binding.habitName.editText?.setSelectAllOnFocus(false)
             binding.habitDesc.editText?.setSelectAllOnFocus(false)
         } else {
+            createOrEdit = CreateOrEdit.EDIT
             log.info("Changing title to ${getString(R.string.create_habit_fragment_label_edit)}")
             requireActivity().actionBar?.title =
                 getString(R.string.create_habit_fragment_label_edit)
@@ -258,4 +282,9 @@ class CreateHabitFragment : Fragment() {
         viewModel.resetCreateHabitFragmentUiModel()
         _binding = null
     }
+}
+
+enum class CreateOrEdit {
+    CREATE,
+    EDIT
 }
