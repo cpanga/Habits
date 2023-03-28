@@ -14,8 +14,8 @@ import kotlinx.coroutines.withContext
 class HabitViewModel(private val dao: HabitDao) : ViewModel() {
 
     fun getAllHabits(): Flow<List<Habit>> = dao.getAll()
-    suspend fun updateHabit(habit: Habit) =  withContext(Dispatchers.IO) {dao.updateHabit(habit) }
-    fun deleteHabit(habit: Habit) = dao.delete(habit)
+    suspend fun updateHabit(habit: Habit) = withContext(Dispatchers.IO) { dao.updateHabit(habit) }
+    suspend fun deleteHabit(uid: Int) = withContext(Dispatchers.IO) { dao.deleteByUid(uid) }
     suspend fun createHabit(habit: Habit) = withContext(Dispatchers.IO) { dao.insertAll(habit) }
 
     // TODO decide how to use repository
@@ -30,6 +30,7 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
 
     fun populateUiModel(habit: Habit) {
         _createHabitUiModel.run {
+            uid = habit.uid
             habitName.postValue(habit.habitName)
             habitDesc.postValue(habit.habitDesc)
             streak = habit.streak
@@ -50,18 +51,18 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
 
     // Reset all
     fun resetCreateHabitFragmentUiModel() {
-            // Reset the new habit form values to the default
-            postDayValueFalse(
-                _createHabitUiModel.monEnabled,
-                _createHabitUiModel.tueEnabled,
-                _createHabitUiModel.wedEnabled,
-                _createHabitUiModel.thuEnabled,
-                _createHabitUiModel.friEnabled,
-                _createHabitUiModel.satEnabled,
-                _createHabitUiModel.sunEnabled,
-                _createHabitUiModel.nameTextInteractedWith,
-                _createHabitUiModel.descTextInteractedWith
-            )
+        // Reset the new habit form values to the default
+        postDayValueFalse(
+            _createHabitUiModel.monEnabled,
+            _createHabitUiModel.tueEnabled,
+            _createHabitUiModel.wedEnabled,
+            _createHabitUiModel.thuEnabled,
+            _createHabitUiModel.friEnabled,
+            _createHabitUiModel.satEnabled,
+            _createHabitUiModel.sunEnabled,
+            _createHabitUiModel.nameTextInteractedWith,
+            _createHabitUiModel.descTextInteractedWith
+        )
         _createHabitUiModel.run {
             reminderTime.postValue((listOf(9, 0)))
             habitDesc.postValue("")

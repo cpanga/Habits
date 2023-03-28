@@ -6,6 +6,9 @@ import com.example.habits.util.convertDaysToString
 import java.util.logging.Logger
 
 class CreateHabitFragmentUiModel {
+
+    var uid: Int? = null
+
     // State of each day of week button
     val monEnabled = MutableLiveData<Boolean>().apply { postValue(false) }
     val tueEnabled = MutableLiveData<Boolean>().apply { postValue(false) }
@@ -37,7 +40,7 @@ class CreateHabitFragmentUiModel {
             sunEnabled.value ?: true,
         )
         return Habit(
-            uid = 0,
+            uid = uid ?: 0,
             habitName = habitName.value ?: "Habit Name",
             habitDesc = habitDesc.value ?: "Habit Desc",
             streak = streak,

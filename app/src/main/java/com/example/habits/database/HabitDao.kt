@@ -17,6 +17,6 @@ interface HabitDao {
     @Insert
     fun insertAll(vararg habits: Habit)
 
-    @Delete
-    fun delete(habit: Habit)
+    @Query("DELETE FROM habit WHERE uid = :uid")
+    fun deleteByUid(uid: Int)
 }

@@ -3,6 +3,8 @@ package com.example.habits
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.core.widget.doAfterTextChanged
@@ -14,19 +16,19 @@ import androidx.lifecycle.coroutineScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.habits.databinding.FragmentHabitCreateBinding
-import com.example.habits.util.*
+import com.example.habits.util.convertTimeToString
+import com.example.habits.util.ensureAtLeastOneIsTrue
+import com.example.habits.util.isTextBoxEmpty
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 
 /**
- * A simple [Fragment] subclass as the second destination in the navigation.
+ * Fragment for creating a new Habit, or editing an existing one.
  */
 class CreateHabitFragment : Fragment() {
     companion object {
@@ -61,6 +63,43 @@ class CreateHabitFragment : Fragment() {
         // Populate the fragment's values with defaults, or with the values passed in if editing a Habit
         populateValues()
 
+        // Set UI observers and listeners
+        log.info("Set Observers and Listeners")
+        setOnTextChangedListeners(
+            binding.habitName,
+            getString(R.string.habit_name_error),
+            uiModel.nameTextInteractedWith
+        )
+        setOnTextChangedListeners(
+            binding.habitDesc,
+            getString(R.string.habit_desc_error),
+            uiModel.descTextInteractedWith
+        )
+        setDayOfWeekObserversAndListeners()
+        setReminderTimeObserver(binding.reminderTimeBox, uiModel.reminderTime)
+        setTextBoxObserver(binding.habitName, uiModel.habitName)
+        setTextBoxObserver(binding.habitDesc, uiModel.habitDesc)
+        setTimePickerBoxListener(binding.reminderTimeBox)
+        setCreateButtonClickListener()
+        setDeleteButtonClickListener()
+    }
+
+    private fun setDeleteButtonClickListener() {
+        binding.deleteButton.setOnClickListener() {
+            log.info("Deleting habit: '${uiModel.habitName}'")
+            lifecycle.coroutineScope.launch() {
+                try {
+                    viewModel.deleteHabit(uiModel.uid!!)
+                } catch (e: java.lang.NullPointerException) {
+                    log.warning("There is no uuid for some reason. This should never happen. $e")
+                }
+            }
+            // Navigate back to list fragment
+            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+        }
+    }
+
+    private fun setCreateButtonClickListener() {
         binding.createButton.setOnClickListener {
             // Check that there is text in both text boxes before saving
             log.info("USER: ${binding.createButton.text} button pressed")
@@ -117,25 +156,8 @@ class CreateHabitFragment : Fragment() {
                 // Navigate back to list fragment
                 findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
             }
-        }
 
-        // Set UI observers and listeners
-        log.info("Set Observers and Listeners")
-        setOnTextChangedListeners(
-            binding.habitName,
-            getString(R.string.habit_name_error),
-            uiModel.nameTextInteractedWith
-        )
-        setOnTextChangedListeners(
-            binding.habitDesc,
-            getString(R.string.habit_desc_error),
-            uiModel.descTextInteractedWith
-        )
-        setDayOfWeekObserversAndListeners()
-        setReminderTimeObserver(binding.reminderTimeBox, uiModel.reminderTime)
-        setTextBoxObserver(binding.habitName, uiModel.habitName)
-        setTextBoxObserver(binding.habitDesc, uiModel.habitDesc)
-        setTimePickerBoxListener(binding.reminderTimeBox)
+        }
 
     }
 
@@ -251,6 +273,7 @@ class CreateHabitFragment : Fragment() {
         }
     }
 
+    // TODO can restructure this to reduce duplication
     private fun populateValues() {
         // Pull habit from fragment args. Will be null if no args passed
         val args: CreateHabitFragmentArgs by navArgs()
@@ -261,16 +284,26 @@ class CreateHabitFragment : Fragment() {
             log.info("No args passed in, populate fragment with default values")
             requireActivity().actionBar?.title = getString(R.string.create_habit_fragment_label)
             viewModel.resetCreateHabitFragmentUiModel()
+            binding.createButton.run {
+                text = getString(R.string.create)
+                icon = resources.getDrawable(R.drawable.baseline_add_task_24)
+            }
             binding.habitName.editText?.setSelectAllOnFocus(false)
             binding.habitDesc.editText?.setSelectAllOnFocus(false)
+            binding.deleteButton.visibility = GONE
+
         } else {
             createOrEdit = CreateOrEdit.EDIT
             log.info("Changing title to ${getString(R.string.create_habit_fragment_label_edit)}")
             requireActivity().actionBar?.title =
                 getString(R.string.create_habit_fragment_label_edit)
-            binding.createButton.text = getString(R.string.save)
+            binding.createButton.run {
+                text = getString(R.string.save)
+                icon = requireContext().getDrawable(R.drawable.baseline_save_24)
+            }
             binding.habitName.editText?.setSelectAllOnFocus(true)
             binding.habitDesc.editText?.setSelectAllOnFocus(true)
+            binding.deleteButton.visibility = VISIBLE
             log.info("Applying saved values. habit name = ${habit.habitName}")
             viewModel.populateUiModel(habit)
         }
@@ -284,6 +317,7 @@ class CreateHabitFragment : Fragment() {
     }
 }
 
+// TODO look at this again, can you do better?
 enum class CreateOrEdit {
     CREATE,
     EDIT
