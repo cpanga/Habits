@@ -27,4 +27,6 @@
     <string name="edit_your_habit">Edit your Habit</string>
     <string name="create_a_new_habit">Create a new Habit</string>
     <string name="delete">Delete</string>
+    <string name="create_your_first_habit">Create your first Habit</string>
+    <string name="let_s_get_started">Let\'s get started</string>
 </resources>

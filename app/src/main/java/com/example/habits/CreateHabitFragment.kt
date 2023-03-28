@@ -1,5 +1,6 @@
 package com.example.habits
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -66,14 +67,10 @@ class CreateHabitFragment : Fragment() {
         // Set UI observers and listeners
         log.info("Set Observers and Listeners")
         setOnTextChangedListeners(
-            binding.habitName,
-            getString(R.string.habit_name_error),
-            uiModel.nameTextInteractedWith
+            binding.habitName, getString(R.string.habit_name_error), uiModel.nameTextInteractedWith
         )
         setOnTextChangedListeners(
-            binding.habitDesc,
-            getString(R.string.habit_desc_error),
-            uiModel.descTextInteractedWith
+            binding.habitDesc, getString(R.string.habit_desc_error), uiModel.descTextInteractedWith
         )
         setDayOfWeekObserversAndListeners()
         setReminderTimeObserver(binding.reminderTimeBox, uiModel.reminderTime)
@@ -86,7 +83,7 @@ class CreateHabitFragment : Fragment() {
 
     private fun setDeleteButtonClickListener() {
         binding.deleteButton.setOnClickListener() {
-            log.info("Deleting habit: '${uiModel.habitName}'")
+            log.info("Deleting habit: '${uiModel.habitName.value}'")
             lifecycle.coroutineScope.launch() {
                 try {
                     viewModel.deleteHabit(uiModel.uid!!)
@@ -104,16 +101,12 @@ class CreateHabitFragment : Fragment() {
             // Check that there is text in both text boxes before saving
             log.info("USER: ${binding.createButton.text} button pressed")
 
-            checkTextBoxErrors(
-                binding.habitName,
+            checkTextBoxErrors(binding.habitName,
                 getString(R.string.habit_name_error),
-                uiModel.nameTextInteractedWith.apply { value = true }
-            )
-            checkTextBoxErrors(
-                binding.habitDesc,
+                uiModel.nameTextInteractedWith.apply { value = true })
+            checkTextBoxErrors(binding.habitDesc,
                 getString(R.string.habit_desc_error),
-                uiModel.descTextInteractedWith.apply { value = true }
-            )
+                uiModel.descTextInteractedWith.apply { value = true })
 
 
             // If there are errors with the text box inputs, log and cancel saving
@@ -211,9 +204,7 @@ class CreateHabitFragment : Fragment() {
     }
 
     private fun checkTextBoxErrors(
-        textBox: TextInputLayout,
-        errorText: String,
-        interactedWith: MutableLiveData<Boolean>
+        textBox: TextInputLayout, errorText: String, interactedWith: MutableLiveData<Boolean>
     ) {
         val textBoxEmpty = isTextBoxEmpty(textBox)
         if (interactedWith.value == true) {
@@ -221,7 +212,7 @@ class CreateHabitFragment : Fragment() {
                 textBoxEmpty, interactedWith.value == true, textBox, errorText
             )
         } else if (!textBoxEmpty) {
-            log.info("textBox $textBox has been interacted with. Setting flag")
+            log.info("textBox ${textBox.id} has been interacted with. Setting flag")
             interactedWith.postValue(true)
         }
 
@@ -279,33 +270,41 @@ class CreateHabitFragment : Fragment() {
         val args: CreateHabitFragmentArgs by navArgs()
         val habit = args.habit
 
-        if (habit == null) {
-            createOrEdit = CreateOrEdit.CREATE
-            log.info("No args passed in, populate fragment with default values")
-            requireActivity().actionBar?.title = getString(R.string.create_habit_fragment_label)
-            viewModel.resetCreateHabitFragmentUiModel()
-            binding.createButton.run {
-                text = getString(R.string.create)
-                icon = resources.getDrawable(R.drawable.baseline_add_task_24)
-            }
-            binding.habitName.editText?.setSelectAllOnFocus(false)
-            binding.habitDesc.editText?.setSelectAllOnFocus(false)
-            binding.deleteButton.visibility = GONE
+        createOrEdit = if (habit == null) CreateOrEdit.CREATE else CreateOrEdit.EDIT
 
-        } else {
-            createOrEdit = CreateOrEdit.EDIT
-            log.info("Changing title to ${getString(R.string.create_habit_fragment_label_edit)}")
-            requireActivity().actionBar?.title =
-                getString(R.string.create_habit_fragment_label_edit)
-            binding.createButton.run {
-                text = getString(R.string.save)
-                icon = requireContext().getDrawable(R.drawable.baseline_save_24)
+        var selectAllOnFocus: Boolean? = null
+        var actionBarTitle: String? = null
+        var createButtonString: String? = null
+        lateinit var createButtonIcon: Drawable
+
+        when (createOrEdit) {
+            CreateOrEdit.CREATE -> {
+                log.info("No args passed in, populate fragment with default values")
+                viewModel.resetCreateHabitFragmentUiModel()
+                actionBarTitle = getString(R.string.create_habit_fragment_label)
+                selectAllOnFocus = false
+                createButtonString = getString(R.string.create)
+                createButtonIcon = resources.getDrawable(R.drawable.baseline_add_task_24)
+                binding.deleteButton.visibility = GONE
             }
-            binding.habitName.editText?.setSelectAllOnFocus(true)
-            binding.habitDesc.editText?.setSelectAllOnFocus(true)
-            binding.deleteButton.visibility = VISIBLE
-            log.info("Applying saved values. habit name = ${habit.habitName}")
-            viewModel.populateUiModel(habit)
+            CreateOrEdit.EDIT -> {
+                log.info("Applying saved values. habit name = ${habit!!.habitName}")
+                viewModel.populateUiModel(habit)
+                actionBarTitle = getString(R.string.create_habit_fragment_label_edit)
+                selectAllOnFocus = true
+                createButtonString = getString(R.string.save)
+                createButtonIcon = resources.getDrawable(R.drawable.baseline_save_24)
+                binding.deleteButton.visibility = VISIBLE
+            }
+        }
+
+        log.info("Changing fragment title to $actionBarTitle")
+        requireActivity().actionBar?.title = actionBarTitle
+        binding.habitName.editText?.setSelectAllOnFocus(selectAllOnFocus)
+        binding.habitDesc.editText?.setSelectAllOnFocus(selectAllOnFocus)
+        binding.createButton.run {
+            text = createButtonString
+            icon = createButtonIcon
         }
     }
 
@@ -317,8 +316,6 @@ class CreateHabitFragment : Fragment() {
     }
 }
 
-// TODO look at this again, can you do better?
 enum class CreateOrEdit {
-    CREATE,
-    EDIT
+    CREATE, EDIT
 }

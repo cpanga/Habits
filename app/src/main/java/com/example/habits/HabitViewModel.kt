@@ -22,6 +22,7 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
     // private val habitRepository = HabitRepository(getDatabase(application))
 
     val fabVisible = MutableLiveData<Boolean>().apply { postValue(true) }
+    val welcomeScreenVisible = MutableLiveData<Boolean>().apply { postValue(true) }
 
     // UI Model for holding data for CreateHabitFragment
     private val _createHabitUiModel = CreateHabitFragmentUiModel()

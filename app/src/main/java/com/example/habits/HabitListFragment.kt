@@ -4,13 +4,15 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habits.databinding.FragmentHabitListBinding
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.logging.Logger
 
@@ -33,8 +35,7 @@ class HabitListFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentHabitListBinding.inflate(inflater, container, false)
@@ -49,12 +50,26 @@ class HabitListFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = habitAdapter
         }
+        binding.noHabitsButton.setOnClickListener {
+            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+            viewModel.fabVisible.postValue(false)
+        }
+
+        val welcomeScreenObserver = Observer<Boolean> {
+            binding.noHabitsLayout.visibility = if (it) VISIBLE else GONE
+            viewModel.fabVisible.postValue(!it)
+        }
+        viewModel.welcomeScreenVisible.observe(viewLifecycleOwner, welcomeScreenObserver)
+
         lifecycle.coroutineScope.launch {
             viewModel.getAllHabits().collect() {
                 habitAdapter.submitList(it)
+                viewModel.welcomeScreenVisible.postValue(it.isEmpty())
             }
         }
     }
+
+
 
     private fun hideFab() {
         log.info("Hiding FAB")
