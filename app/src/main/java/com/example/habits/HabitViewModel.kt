@@ -69,6 +69,7 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
             habitDesc.postValue("")
             habitName.postValue("")
             streak = 0
+            uid = null
         }
     }
 

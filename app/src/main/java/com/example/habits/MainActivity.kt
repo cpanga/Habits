@@ -31,13 +31,6 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
-        // Create database
-        val db = Room.databaseBuilder(
-            applicationContext, HabitDatabase::class.java, "habit-database"
-        ).build()
-
-        // db.habitDao().insertAll(hab)
-
         // Instantiate viewModel using a Factory
         val viewModel: HabitViewModel by lazy {
             val activity = requireNotNull(this) {
