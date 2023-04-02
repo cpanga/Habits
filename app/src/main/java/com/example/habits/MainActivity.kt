@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
+        // TODO - FAB should be part of each fragment separately. Ideally i'd have a details fragment, then allow editing from there? Or perhaps just have an expandable list
         binding.fab
         binding.fab.setOnClickListener {
             log.info("USER: Clicked FAB, moving to ${navController.currentDestination}")

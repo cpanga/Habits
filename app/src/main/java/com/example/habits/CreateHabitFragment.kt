@@ -20,6 +20,7 @@ import com.example.habits.databinding.FragmentHabitCreateBinding
 import com.example.habits.util.convertTimeToString
 import com.example.habits.util.ensureAtLeastOneIsTrue
 import com.example.habits.util.isTextBoxEmpty
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -83,15 +84,34 @@ class CreateHabitFragment : Fragment() {
     private fun setDeleteButtonClickListener() {
         binding.deleteButton.setOnClickListener() {
             log.info("Deleting habit: '${uiModel.habitName.value}'")
-            lifecycle.coroutineScope.launch() {
-                try {
-                    viewModel.deleteHabit(uiModel.uid!!)
-                } catch (e: java.lang.NullPointerException) {
-                    log.warning("There is no uuid for some reason. This should never happen. $e")
-                }
+            showConfirmationDialog()
+        }
+    }
+
+    /**
+     * Displays an alert dialog to get the user's confirmation before deleting the item.
+     */
+    private fun showConfirmationDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.delete_title, uiModel.habitName.value.toString()))
+            .setMessage(getString(R.string.delete_question))
+            .setCancelable(false)
+            .setNegativeButton(getString(R.string.no)) { _, _ -> }
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                deleteItem()
+                // Navigate back to list fragment
+                findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
             }
-            // Navigate back to list fragment
-            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+            .show()
+    }
+
+    private fun deleteItem() {
+        lifecycle.coroutineScope.launch() {
+            try {
+                viewModel.deleteHabit(uiModel.uid!!)
+            } catch (e: java.lang.NullPointerException) {
+                log.warning("There is no uuid for some reason. This should never happen. $e")
+            }
         }
     }
 

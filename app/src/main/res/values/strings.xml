@@ -26,6 +26,10 @@
     <string name="select_reminder_time">Select reminder time</string>
     <string name="edit_your_habit">Edit your Habit</string>
     <string name="create_a_new_habit">Create a new Habit</string>
+    <string name="delete_question">Are you sure you want to delete this Habit?</string>
+    <string name="delete_title">Really delete %1$s?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
     <string name="delete">Delete</string>
     <string name="create_your_first_habit">Create your first Habit</string>
     <string name="let_s_get_started">Let\'s get started</string>

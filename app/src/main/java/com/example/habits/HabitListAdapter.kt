@@ -65,6 +65,7 @@ class HabitViewHolder(private var binding: HabitListItemBinding) :
         binding.recyclerEdit.setOnClickListener {
             HabitListAdapter.log.info("USER: Clicked edit button on habit: ${habit.habitName} position: $position")
             hideFab()
+            // TODO - Ideally would just pass in primary key, and avoid needing to parcelise the habit, just search for the item in the database instead.
             val action = HabitListFragmentDirections.actionFirstFragmentToSecondFragment(
                 habit = habit,
                 fragmentTitle = "Edit your Habit"
