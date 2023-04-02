@@ -4,8 +4,10 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.*
 
-// TODO can't store lists in room DB - need another solution
 
+/**
+ * Data class of a single 'Habit' to be stored in the database. Parcelable so it can be passed as an argument in to [CreateHabitFragment.kt]
+ */
 @Entity
 data class Habit(
     @PrimaryKey(autoGenerate = true) val uid: Int,

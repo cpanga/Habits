@@ -58,14 +58,12 @@ class CreateHabitFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Define uiModel as ViewModel's uiModel
+        // Define uiModel as ViewModel's uiModel, and populate the uiModel with appropriate values
         uiModel = viewModel.createHabitUiModel
-
-        // Populate the fragment's values with defaults, or with the values passed in if editing a Habit
         populateValues()
 
         // Set UI observers and listeners
-        log.info("Set Observers and Listeners")
+        log.info("Setting Observers and Listeners")
         setOnTextChangedListeners(
             binding.habitName, getString(R.string.habit_name_error), uiModel.nameTextInteractedWith
         )
@@ -81,6 +79,7 @@ class CreateHabitFragment : Fragment() {
         setDeleteButtonClickListener()
     }
 
+    // Set the click listener for the delete button. Only shown if editing a Habit.
     private fun setDeleteButtonClickListener() {
         binding.deleteButton.setOnClickListener() {
             log.info("Deleting habit: '${uiModel.habitName.value}'")
@@ -98,7 +97,7 @@ class CreateHabitFragment : Fragment() {
 
     private fun setCreateButtonClickListener() {
         binding.createButton.setOnClickListener {
-            // Check that there is text in both text boxes before saving
+            // Check that there is text in both text boxes before saving. If there are, errors will be displayed
             log.info("USER: ${binding.createButton.text} button pressed")
 
             checkTextBoxErrors(binding.habitName,
@@ -129,10 +128,12 @@ class CreateHabitFragment : Fragment() {
                 log.info("No days selected. Show snackbar")
                 createNoDaysSelectedSnackbar()
             } else {
+                // Update the uiModel and return the current data as a Habit
                 log.info("Saving habit")
                 uiModel.habitName.value = binding.habitName.editText!!.text.toString()
                 uiModel.habitDesc.value = binding.habitDesc.editText!!.text.toString()
                 val habit = uiModel.returnAsHabit()
+                // Save the habit to the Database
                 lifecycle.coroutineScope.launch() {
                     when (createOrEdit) {
                         CreateOrEdit.EDIT -> {
@@ -149,9 +150,7 @@ class CreateHabitFragment : Fragment() {
                 // Navigate back to list fragment
                 findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
             }
-
         }
-
     }
 
     private fun createNoDaysSelectedSnackbar() {
@@ -264,7 +263,6 @@ class CreateHabitFragment : Fragment() {
         }
     }
 
-    // TODO can restructure this to reduce duplication
     private fun populateValues() {
         // Pull habit from fragment args. Will be null if no args passed
         val args: CreateHabitFragmentArgs by navArgs()
@@ -316,6 +314,7 @@ class CreateHabitFragment : Fragment() {
     }
 }
 
+// Enum class which determines if the fragment will show the UI for creating or editing a Habit
 enum class CreateOrEdit {
     CREATE, EDIT
 }

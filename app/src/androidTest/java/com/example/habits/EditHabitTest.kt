@@ -37,7 +37,7 @@ class EditHabitTest {
 
         launchFragmentInContainer<CreateHabitFragment>(
             fragmentArgs = fragArgs,
-            themeResId = R.style.Base_Theme_Habits
+            themeResId = R.style.HabitTheme
         )
 
         println("Perform clicks")
@@ -66,7 +66,7 @@ class EditHabitTest {
 
         launchFragmentInContainer<CreateHabitFragment>(
             fragmentArgs = fragArgs,
-            themeResId = R.style.Theme_Habits
+            themeResId = R.style.HabitTheme
         )
 
         println("Assert the correct alpha values - 0110111")
@@ -95,7 +95,7 @@ class EditHabitTest {
 
         launchFragmentInContainer<CreateHabitFragment>(
             fragmentArgs = fragArgs,
-            themeResId = R.style.Base_Theme_Habits
+            themeResId = R.style.HabitTheme
         )
 
         onView(withId(R.id.reminder_time)).perform(click())

@@ -24,7 +24,7 @@ class NavigationTest {
         )
 
         val habitListScenario = launchFragmentInContainer<HabitListFragment>(
-            themeResId = R.style.Base_Theme_Habits
+            themeResId = R.style.HabitTheme
         )
 
         habitListScenario.onFragment {

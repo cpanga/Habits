@@ -5,6 +5,9 @@ import com.example.habits.database.Habit
 import com.example.habits.util.convertDaysToString
 import java.util.logging.Logger
 
+/**
+ * UiModel to store the data required to display CreateHabitFragment.
+ */
 class CreateHabitFragmentUiModel {
 
     var uid: Int? = null
@@ -28,7 +31,6 @@ class CreateHabitFragmentUiModel {
     val descTextInteractedWith = MutableLiveData<Boolean>().apply { postValue(false) }
 
 
-    // TODO adapt to edit existing habit when editing
     fun returnAsHabit(): Habit {
         val listOfDays = listOf(
             monEnabled.value ?: true,

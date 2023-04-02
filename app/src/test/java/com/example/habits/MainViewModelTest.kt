@@ -3,6 +3,7 @@ package com.example.habits
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.habits.database.HabitDao
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -14,11 +15,11 @@ class ViewModelTests {
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
-    private val application: Application = mock(Application::class.java)
+    private val habitDao: HabitDao = mock(HabitDao::class.java)
 
     @Test
     fun quantity_twelve_cupcakes() {
-        val viewModel = HabitViewModel(application)
+        val viewModel = HabitViewModel(habitDao)
         viewModel.fabVisible.postValue(false)
         assertEquals(false, viewModel.fabVisible.value)
     }

@@ -5,6 +5,12 @@ import com.google.android.material.textfield.TextInputLayout
 import java.util.logging.Logger
 import kotlin.math.min
 
+/**
+ * Get a human readable string of which days are selected from a string of 0s and 1s which represent each day
+ * @param days day string, which is 7 1s or 0s
+ * @param logger for logging errors
+ * @return human readable list of which days are active
+ */
 fun getStringFromDays(days: String, logger: Logger): String? {
 
     val dayList = listOf("Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat ", "Sun ")
@@ -98,7 +104,11 @@ private fun addOneOrZero(day: Boolean, dayString: String): String {
     return dayString + if (day) "1" else "0"
 }
 
-
+/**
+ * Ensure at least one value is equal to true from a set of MutableLiveData<Boolean>
+ * @param day vararg parameter of MutableLiveData<Boolean>
+ * @return return true if at least one input boolean value is true
+ */
 fun ensureAtLeastOneIsTrue(vararg day: MutableLiveData<Boolean>): Boolean {
     for (day_ in day) {
         if (day_.value == true) return true
@@ -106,6 +116,10 @@ fun ensureAtLeastOneIsTrue(vararg day: MutableLiveData<Boolean>): Boolean {
     return false
 }
 
+/**
+ * @param textBox the text box
+ * @return if the text box is empty
+ */
 fun isTextBoxEmpty(textBox: TextInputLayout): Boolean {
     return textBox.editText?.text?.trim()?.isEmpty() == true
 }
