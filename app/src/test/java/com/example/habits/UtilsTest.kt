@@ -1,10 +1,13 @@
 package com.example.habits
 
+import android.icu.util.Calendar
 import com.example.habits.util.convertTimeToString
 import com.example.habits.util.getStringFromDays
 import com.example.habits.util.shouldBeNotifiedToday
 import org.junit.Assert.*
 import org.junit.Test
+import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import java.util.logging.Logger
 
 class UtilsTest {
@@ -58,33 +61,43 @@ class UtilsTest {
 
     @Test
     fun test_should_be_notified() {
-        val tueTime = 1294713217000
-        val wedsTime = 821241217000
-        val friTime = 1168569217000
-        val sunTime = 1295145217000
+
+        val sun = 1
+        val mon = 2
+        val tue = 3
+        val wed = 4
+        val thu = 5
+        val fri = 6
+        val sat = 7
+
 
         val everyDayString = "1111111"
         val noDayString = "0000000"
         val tueAndSun = "0100001"
 
         // All should be false for noDayString
-        assertFalse(shouldBeNotifiedToday(noDayString, tueTime, log))
-        assertFalse(shouldBeNotifiedToday(noDayString, wedsTime, log))
-        assertFalse(shouldBeNotifiedToday(noDayString, friTime, log))
-        assertFalse(shouldBeNotifiedToday(noDayString, sunTime, log))
+        assertFalse(shouldBeNotifiedToday(noDayString, mon, log))
+        assertFalse(shouldBeNotifiedToday(noDayString, tue, log))
+        assertFalse(shouldBeNotifiedToday(noDayString, wed, log))
+        assertFalse(shouldBeNotifiedToday(noDayString, thu, log))
+        assertFalse(shouldBeNotifiedToday(noDayString, fri, log))
+        assertFalse(shouldBeNotifiedToday(noDayString, sun, log))
 
         // All should be true for everyDayString
-        assertTrue(shouldBeNotifiedToday(everyDayString, tueTime, log))
-        assertTrue(shouldBeNotifiedToday(everyDayString, wedsTime, log))
-        assertTrue(shouldBeNotifiedToday(everyDayString, friTime, log))
-        assertTrue(shouldBeNotifiedToday(everyDayString, sunTime, log))
+        assertTrue(shouldBeNotifiedToday(everyDayString, tue, log))
+        assertTrue(shouldBeNotifiedToday(everyDayString, wed, log))
+        assertTrue(shouldBeNotifiedToday(everyDayString, fri, log))
+        assertTrue(shouldBeNotifiedToday(everyDayString, sun, log))
 
 
         // Only Tuesday and Sunday should be true for tueAndSun
-        assertTrue(shouldBeNotifiedToday(tueAndSun, tueTime, log))
-        assertFalse(shouldBeNotifiedToday(tueAndSun, wedsTime, log))
-        assertFalse(shouldBeNotifiedToday(tueAndSun, friTime, log))
-        assertTrue(shouldBeNotifiedToday(tueAndSun, sunTime, log))
+        assertFalse(shouldBeNotifiedToday(tueAndSun, mon, log))
+        assertTrue(shouldBeNotifiedToday(tueAndSun, tue, log))
+        assertFalse(shouldBeNotifiedToday(tueAndSun, wed, log))
+        assertFalse(shouldBeNotifiedToday(tueAndSun, thu, log))
+        assertFalse(shouldBeNotifiedToday(tueAndSun, fri, log))
+        assertFalse(shouldBeNotifiedToday(tueAndSun, sat, log))
+        assertTrue(shouldBeNotifiedToday(tueAndSun, sun, log))
 
     }
 }

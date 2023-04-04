@@ -15,6 +15,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.habits.databinding.ActivityMainBinding
+import com.example.habits.util.getDayOfWeekFromUnixTime
 import com.example.habits.util.shouldBeNotifiedToday
 import java.time.Instant
 import java.time.ZoneId
@@ -86,10 +87,9 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings -> true
             R.id.action_debug -> {
-                val calendar = Calendar.getInstance()
-                val time = calendar.timeInMillis
-                log.info("@@@ Day ${shouldBeNotifiedToday("1010101",time, log)}")
-                log.info("@@@ sunTest ${shouldBeNotifiedToday("1010101",1295145217000, log)}")
+                val time = Calendar.getInstance().timeInMillis
+                log.info("@@@ Day ${shouldBeNotifiedToday("1010101", getDayOfWeekFromUnixTime(time), log)}")
+                log.info("@@@ sunTest ${shouldBeNotifiedToday("1010101", getDayOfWeekFromUnixTime(1295145217000), log)}")
                 true
             }
             else -> super.onOptionsItemSelected(item)

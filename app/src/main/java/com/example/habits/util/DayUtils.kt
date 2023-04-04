@@ -78,14 +78,16 @@ private fun addOneOrZero(day: Boolean, string: String): String {
     return string + if (day) "1" else "0"
 }
 
-// TODO fix
-fun shouldBeNotifiedToday(dayString: String, time: Long, logger: Logger):Boolean {
-    if (!daysStringIsValid(dayString, logger)) return false
-    val cal = Calendar.getInstance().apply {timeInMillis = time
-        }.get(Calendar.DAY_OF_WEEK)
+fun getDayOfWeekFromUnixTime(time: Long): Int {
+    return Calendar.getInstance().apply {
+        timeInMillis = time
+    }.get(Calendar.DAY_OF_WEEK)
+}
 
+fun shouldBeNotifiedToday(dayString: String, dayOfWeek: Int, logger: Logger): Boolean {
+    if (!daysStringIsValid(dayString, logger)) return false
     // Calendar days are mapped to SUNDAY = 1 .. SATURDAY = 7, so reorder to start on Monday and index from 0
-    val index = if (cal ==1) 6 else cal - 2
+    val index = if (dayOfWeek == 1) 6 else dayOfWeek - 2
     return dayString[index] == '1'
 }
 
