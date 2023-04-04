@@ -1,5 +1,6 @@
 package com.example.habits
 
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -13,9 +14,10 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.room.Room
-import com.example.habits.database.HabitDatabase
 import com.example.habits.databinding.ActivityMainBinding
+import com.example.habits.util.shouldBeNotifiedToday
+import java.time.Instant
+import java.time.ZoneId
 import java.util.logging.Logger
 
 class MainActivity : AppCompatActivity() {
@@ -83,6 +85,13 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
+            R.id.action_debug -> {
+                val calendar = Calendar.getInstance()
+                val time = calendar.timeInMillis
+                log.info("@@@ Day ${shouldBeNotifiedToday("1010101",time, log)}")
+                log.info("@@@ sunTest ${shouldBeNotifiedToday("1010101",1295145217000, log)}")
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

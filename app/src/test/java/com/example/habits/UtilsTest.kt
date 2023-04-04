@@ -2,6 +2,7 @@ package com.example.habits
 
 import com.example.habits.util.convertTimeToString
 import com.example.habits.util.getStringFromDays
+import com.example.habits.util.shouldBeNotifiedToday
 import org.junit.Assert.*
 import org.junit.Test
 import java.util.logging.Logger
@@ -53,5 +54,37 @@ class UtilsTest {
         assertNull(convertTimeToString(0, -1))
         assertNull(convertTimeToString(0, 60))
         assertNull(convertTimeToString(24, 0))
+    }
+
+    @Test
+    fun test_should_be_notified() {
+        val tueTime = 1294713217000
+        val wedsTime = 821241217000
+        val friTime = 1168569217000
+        val sunTime = 1295145217000
+
+        val everyDayString = "1111111"
+        val noDayString = "0000000"
+        val tueAndSun = "0100001"
+
+        // All should be false for noDayString
+        assertFalse(shouldBeNotifiedToday(noDayString, tueTime, log))
+        assertFalse(shouldBeNotifiedToday(noDayString, wedsTime, log))
+        assertFalse(shouldBeNotifiedToday(noDayString, friTime, log))
+        assertFalse(shouldBeNotifiedToday(noDayString, sunTime, log))
+
+        // All should be true for everyDayString
+        assertTrue(shouldBeNotifiedToday(everyDayString, tueTime, log))
+        assertTrue(shouldBeNotifiedToday(everyDayString, wedsTime, log))
+        assertTrue(shouldBeNotifiedToday(everyDayString, friTime, log))
+        assertTrue(shouldBeNotifiedToday(everyDayString, sunTime, log))
+
+
+        // Only Tuesday and Sunday should be true for tueAndSun
+        assertTrue(shouldBeNotifiedToday(tueAndSun, tueTime, log))
+        assertFalse(shouldBeNotifiedToday(tueAndSun, wedsTime, log))
+        assertFalse(shouldBeNotifiedToday(tueAndSun, friTime, log))
+        assertTrue(shouldBeNotifiedToday(tueAndSun, sunTime, log))
+
     }
 }

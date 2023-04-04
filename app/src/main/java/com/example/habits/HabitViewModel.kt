@@ -18,9 +18,6 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
     suspend fun deleteHabit(uid: Int) = withContext(Dispatchers.IO) { dao.deleteByUid(uid) }
     suspend fun createHabit(habit: Habit) = withContext(Dispatchers.IO) { dao.insertAll(habit) }
 
-    // TODO decide how to use repository
-    // private val habitRepository = HabitRepository(getDatabase(application))
-
     val fabVisible = MutableLiveData<Boolean>().apply { postValue(true) }
     val welcomeScreenVisible = MutableLiveData<Boolean>().apply { postValue(true) }
 
