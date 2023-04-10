@@ -27,8 +27,10 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
     suspend fun updateHabit(habit: Habit) = withContext(Dispatchers.IO) { dao.updateHabit(habit) }
     private suspend fun updateStreak(streak: Int, uid: Int) =
         withContext(Dispatchers.IO) { dao.updateStreak(streak, uid) }
+
     private suspend fun updateNotifActive(notifActive: Int, uid: Int) =
-        withContext(Dispatchers.IO) { dao.updateStreak(notifActive, uid) }
+        withContext(Dispatchers.IO) { dao.updateNotif(notifActive, uid) }
+
     suspend fun deleteHabit(uid: Int) = withContext(Dispatchers.IO) { dao.deleteByUid(uid) }
     suspend fun createHabit(habit: Habit) = withContext(Dispatchers.IO) { dao.insertAll(habit) }
 
@@ -67,12 +69,21 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
      */
     fun checkHabitActiveState(habit: Habit) {
         val time = Calendar.getInstance().timeInMillis
-        if (shouldBeNotifiedToday(habit.daysOfWeek, getDayOfWeekFromUnixTime(time), log))
+        if (shouldBeNotifiedToday(
+                habit.daysOfWeek,
+                getDayOfWeekFromUnixTime(time),
+                log
+            ) && habit.notifActive != 1
+        )
             viewModelScope.launch {
+                log.info("Updating active state for ${habit.habitName}")
                 updateNotifActive(1, habit.uid)
             }
     }
 
+    /**
+     *  Update habit active state for all habits
+     */
     fun checkHabitActiveForAllHabits() {
         viewModelScope.launch {
             getAllHabits().collect() {
@@ -81,7 +92,6 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
                 }
             }
         }
-
     }
 
     /**
@@ -89,11 +99,13 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
      */
     fun habitDonePressed(habit: Habit) {
         val uid = habit.uid
+        val newStreak = habit.streak +1
         // Only update if notifActive is true
         if (habit.notifActive == 1) {
+            log.info("Updating streak for ${habit.habitName} to $newStreak")
             viewModelScope.launch {
                 updateNotifActive(0, uid)
-                updateStreak(habit.streak + 1, uid)
+                updateStreak(newStreak, uid)
             }
         } else {
             log.warning("Pressed done when notifActive was not 1")

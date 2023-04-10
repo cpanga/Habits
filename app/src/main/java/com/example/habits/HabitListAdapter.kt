@@ -19,7 +19,7 @@ import java.util.logging.Logger
 /**
  * Adapter for the [RecyclerView] in [HabitListFragment].
  */
-class HabitListAdapter(private var hideFab: (() -> Unit)) :
+class HabitListAdapter(private var hideFab: (() -> Unit), private var habitDone: ((habit: Habit) -> Unit)) :
     ListAdapter<Habit, HabitViewHolder>(DiffCallback) {
     companion object {
         val log: Logger = Logger.getLogger(HabitListAdapter::class.java.name)
@@ -52,7 +52,7 @@ class HabitListAdapter(private var hideFab: (() -> Unit)) :
      * Replaces the content of an existing view with new data
      */
     override fun onBindViewHolder(holder: HabitViewHolder, position: Int) {
-        holder.bind(getItem(position), position, hideFab)
+        holder.bind(getItem(position), position, hideFab, habitDone)
     }
 }
 
@@ -63,7 +63,7 @@ class HabitViewHolder(private var binding: HabitListItemBinding) :
         val log: Logger = Logger.getLogger(HabitViewHolder::class.java.name)
     }
 
-    fun bind(habit: Habit, position: Int, hideFab: () -> Unit) {
+    fun bind(habit: Habit, position: Int, hideFab: () -> Unit, habitDone: (habit: Habit) -> Unit) {
         binding.recyclerHabitName.text = habit.habitName
         binding.recyclerHabitDays.text = getStringFromDays(habit.daysOfWeek, log)
         binding.recyclerHabitStreak.text = habit.streak.toString()
@@ -79,7 +79,7 @@ class HabitViewHolder(private var binding: HabitListItemBinding) :
         }
         if (habit.notifActive == 1) {
             binding.recyclerCard.backgroundTintList =
-                // TODO  - do dependency injection instead of this thing... (https://github.com/square/Dagger)
+                    // TODO  - do dependency injection instead of whatever i'm doing here... (https://github.com/square/Dagger)
                 getColorStateList(this.binding.recyclerEdit.context, R.color.md_theme_dark_error)
             binding.recyclerDone.visibility = VISIBLE
         } else {
@@ -89,7 +89,7 @@ class HabitViewHolder(private var binding: HabitListItemBinding) :
         }
         binding.recyclerDone.setOnClickListener {
             log.info("habit done pressed for ${habit.habitName}")
-        //    habitDone(habit)
+            habitDone(habit)
         }
     }
 }

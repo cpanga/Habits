@@ -12,7 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.coroutineScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.habits.database.Habit
 import com.example.habits.databinding.FragmentHabitListBinding
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.util.logging.Logger
 
@@ -45,7 +47,7 @@ class HabitListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val habitAdapter = HabitListAdapter { hideFab()}
+        val habitAdapter = HabitListAdapter(hideFab = {hideFab()}, habitDone = {habitDone(it)})
         binding.recyclerView.run {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = habitAdapter
@@ -63,21 +65,45 @@ class HabitListFragment : Fragment() {
 
         lifecycle.coroutineScope.launch {
             viewModel.getAllHabits().collect() { habits ->
+                // Update the active state for each habit
+                habits.forEach { habit ->
+                    viewModel.checkHabitActiveState(habit)
+                }
                 habitAdapter.submitList(habits)
                 viewModel.welcomeScreenVisible.postValue(habits.isEmpty())
             }
         }
     }
 
-
-
     private fun hideFab() {
         log.info("Hiding FAB")
         viewModel.fabVisible.postValue(false)
     }
 
-    private fun habitDone() {
-      //  viewModel.habitDonePressed()
+    // TODO Possibly easier to just use uid instead of habit, then check database?
+    private fun habitDone(habit: Habit) {
+        viewModel.habitDonePressed(habit)
+        createDonePressedSnackbar()
+    }
+
+    /**
+     * show snackbar for completing a habit
+     */
+    private fun createDonePressedSnackbar() {
+        // Select a random snackbar text from
+        val snackbarString = listOf(
+            getString(R.string.youre_a_champ),
+            getString(R.string.inspirational),
+            getString(R.string.one_more),
+            getString(R.string.well_done),
+            getString(R.string.nice_one)
+        ).random()
+
+        Snackbar.make(
+            requireActivity().findViewById(R.id.recycler_view),
+            snackbarString,
+            Snackbar.LENGTH_LONG
+        ).show()
     }
 
     override fun onDestroyView() {
