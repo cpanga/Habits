@@ -68,7 +68,7 @@ class HabitViewHolder(private var binding: HabitListItemBinding) :
         binding.recyclerHabitDays.text = getStringFromDays(habit.daysOfWeek, log)
         binding.recyclerHabitStreak.text = habit.streak.toString()
         binding.recyclerEdit.setOnClickListener {
-            HabitListAdapter.log.info("USER: Clicked edit button on habit: ${habit.habitName} position: $position")
+            log.info("USER: Clicked edit button on habit: '${habit.habitName}' position: '$position'")
             hideFab()
             // TODO - Ideally would just pass in primary key, and avoid needing to parcelise the habit, just search for the item in the database instead.
             val action = HabitListFragmentDirections.actionFirstFragmentToSecondFragment(
@@ -80,7 +80,7 @@ class HabitViewHolder(private var binding: HabitListItemBinding) :
         if (habit.notifActive == 1) {
             binding.recyclerCard.backgroundTintList =
                     // TODO  - do dependency injection instead of whatever i'm doing here... (https://github.com/square/Dagger)
-                getColorStateList(this.binding.recyclerEdit.context, R.color.md_theme_dark_error)
+                getColorStateList(this.binding.recyclerEdit.context, R.color.md_theme_dark_tertiary)
             binding.recyclerDone.visibility = VISIBLE
         } else {
             binding.recyclerCard.backgroundTintList =

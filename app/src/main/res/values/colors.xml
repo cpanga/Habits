@@ -3,6 +3,8 @@
     <color name="seed">#6750A4</color>
     <color name="colour_white">#FFFFFF</color>
     <color name="colour_black">#000000</color>
+    <color name="colour_green">#32612D</color>
+    <color name="colour_green_light">#03C04A</color>
     <color name="md_theme_light_primary">#6750A4</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_primaryContainer">#EADDFF</color>

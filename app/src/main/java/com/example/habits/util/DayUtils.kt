@@ -42,7 +42,6 @@ fun daysStringIsValid(days: String, logger: Logger): Boolean {
         logger.warning("days string contains characters other than 0 or 1!")
         return false
     }
-    logger.info("day string $days is valid!")
     return true
 }
 

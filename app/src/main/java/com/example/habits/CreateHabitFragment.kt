@@ -149,7 +149,6 @@ class CreateHabitFragment : Fragment() {
                 createNoDaysSelectedSnackbar()
             } else {
                 // Update the uiModel and return the current data as a Habit
-                log.info("Saving habit")
                 uiModel.habitName.value = binding.habitName.editText!!.text.toString()
                 uiModel.habitDesc.value = binding.habitDesc.editText!!.text.toString()
                 val habit = uiModel.returnAsHabit()

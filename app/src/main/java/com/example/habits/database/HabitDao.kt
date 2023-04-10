@@ -5,7 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HabitDao {
-    @Query("SELECT * FROM habit")
+    // Gets all habits, ordering by notif_active such that habits that can be marked done appear first
+    @Query("SELECT * FROM habit ORDER BY notif_active DESC")
     fun getAll(): Flow<List<Habit>>
 
     @Query("SELECT * FROM habit WHERE habit_name LIKE :name LIMIT 1")

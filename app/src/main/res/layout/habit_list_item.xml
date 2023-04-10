@@ -65,7 +65,7 @@
         style="@style/ThemeOverlay.Material3.Button.ElevatedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/md_theme_dark_primary"
+        android:backgroundTint="@color/colour_green_light"
         android:padding="10dp"
         android:text="@string/done"
         android:textSize="13sp"
