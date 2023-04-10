@@ -45,7 +45,7 @@ class HabitListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val habitAdapter = HabitListAdapter { hideFab() }
+        val habitAdapter = HabitListAdapter { hideFab()}
         binding.recyclerView.run {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = habitAdapter
@@ -62,9 +62,9 @@ class HabitListFragment : Fragment() {
         viewModel.welcomeScreenVisible.observe(viewLifecycleOwner, welcomeScreenObserver)
 
         lifecycle.coroutineScope.launch {
-            viewModel.getAllHabits().collect() {
-                habitAdapter.submitList(it)
-                viewModel.welcomeScreenVisible.postValue(it.isEmpty())
+            viewModel.getAllHabits().collect() { habits ->
+                habitAdapter.submitList(habits)
+                viewModel.welcomeScreenVisible.postValue(habits.isEmpty())
             }
         }
     }
@@ -74,6 +74,10 @@ class HabitListFragment : Fragment() {
     private fun hideFab() {
         log.info("Hiding FAB")
         viewModel.fabVisible.postValue(false)
+    }
+
+    private fun habitDone() {
+      //  viewModel.habitDonePressed()
     }
 
     override fun onDestroyView() {

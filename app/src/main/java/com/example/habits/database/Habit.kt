@@ -16,13 +16,15 @@ data class Habit(
     @ColumnInfo(name = "days_of_week") val daysOfWeek: String,
     @ColumnInfo(name = "notif_hour") val notifHour: Int,
     @ColumnInfo(name = "notif_min") val notifMin: Int,
-    @ColumnInfo(name = "streak") val streak: Int
+    @ColumnInfo(name = "streak") val streak: Int,
+    @ColumnInfo(name = "notif_active") val notifActive: Int
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
+        parcel.readInt(),
         parcel.readInt(),
         parcel.readInt(),
         parcel.readInt()
@@ -35,6 +37,7 @@ data class Habit(
         parcel.writeInt(notifHour)
         parcel.writeInt(notifMin)
         parcel.writeInt(streak)
+        parcel.writeInt(notifActive)
     }
 
     override fun describeContents(): Int {

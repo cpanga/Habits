@@ -28,6 +28,15 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private val viewModel: HabitViewModel by lazy {
+        val activity = requireNotNull(this) {
+            "You can only access the viewModel after onActivityCreated()"
+        }
+        ViewModelProvider(
+            this,
+            HabitViewModel.HabitViewModelFactory((activity.application as HabitApplication).database.habitDao())
+        )[HabitViewModel::class.java]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -35,15 +44,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // Instantiate viewModel using a Factory
-        val viewModel: HabitViewModel by lazy {
-            val activity = requireNotNull(this) {
-                "You can only access the viewModel after onActivityCreated()"
-            }
-            ViewModelProvider(
-                this,
-                HabitViewModel.HabitViewModelFactory((activity.application as HabitApplication).database.habitDao())
-            )[HabitViewModel::class.java]
-        }
+
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -90,6 +91,10 @@ class MainActivity : AppCompatActivity() {
                 val time = Calendar.getInstance().timeInMillis
                 log.info("@@@ Day ${shouldBeNotifiedToday("1010101", getDayOfWeekFromUnixTime(time), log)}")
                 log.info("@@@ sunTest ${shouldBeNotifiedToday("1010101", getDayOfWeekFromUnixTime(1295145217000), log)}")
+                true
+            }
+            R.id.action_refresh -> {
+                viewModel.checkHabitActiveForAllHabits()
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -1,7 +1,12 @@
 package com.example.habits
 
+import android.opengl.Visibility
 import android.view.LayoutInflater
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources.getColorStateList
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -71,6 +76,20 @@ class HabitViewHolder(private var binding: HabitListItemBinding) :
                 fragmentTitle = "Edit your Habit"
             )
             this.itemView.findNavController().navigate(action)
+        }
+        if (habit.notifActive == 1) {
+            binding.recyclerCard.backgroundTintList =
+                // TODO  - do dependency injection instead of this thing... (https://github.com/square/Dagger)
+                getColorStateList(this.binding.recyclerEdit.context, R.color.md_theme_dark_error)
+            binding.recyclerDone.visibility = VISIBLE
+        } else {
+            binding.recyclerCard.backgroundTintList =
+                getColorStateList(this.binding.recyclerEdit.context, R.color.md_theme_dark_primary)
+            binding.recyclerDone.visibility = GONE
+        }
+        binding.recyclerDone.setOnClickListener {
+            log.info("habit done pressed for ${habit.habitName}")
+        //    habitDone(habit)
         }
     }
 }
