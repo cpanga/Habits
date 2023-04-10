@@ -15,9 +15,13 @@ interface HabitDao {
     @Update
     fun updateHabit(habit: Habit)
 
-    // Update only notifActive
+    // Update only streak
     @Query("UPDATE habit SET streak=:streak WHERE uid = :id")
     fun updateStreak(streak: Int, id: Int)
+
+    // Update only lastNotified
+    @Query("UPDATE habit SET last_notified=:lastNotified WHERE uid = :id")
+    fun updateLastNotified(lastNotified: Int, id: Int)
 
     // Update only notifActive
     @Query("UPDATE habit SET notif_active=:notifActive WHERE uid = :id")

@@ -24,6 +24,7 @@ class CreateHabitFragmentUiModel {
     val reminderTime = MutableLiveData<List<Int>>().apply { postValue(listOf(9, 0)) }
     var streak: Int = 0
     var notifActive: Int = 0
+    var lastNotified: Int = 0
     val habitName = MutableLiveData<String>()
     val habitDesc = MutableLiveData<String>()
 
@@ -48,6 +49,7 @@ class CreateHabitFragmentUiModel {
             habitDesc = habitDesc.value ?: "Habit Desc",
             streak = streak,
             notifActive = notifActive,
+            lastNotified = lastNotified,
             notifHour = reminderTime.value?.first() ?: 9,
             notifMin = reminderTime.value?.last() ?: 0,
             daysOfWeek = convertDaysToString(

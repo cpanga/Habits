@@ -7,10 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.habits.database.Habit
 import com.example.habits.database.HabitDao
-import com.example.habits.util.getDayOfWeekFromUnixTime
-import com.example.habits.util.postDayValueFalse
-import com.example.habits.util.postDayValueFromString
-import com.example.habits.util.shouldBeNotifiedToday
+import com.example.habits.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -31,6 +28,9 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
     private suspend fun updateNotifActive(notifActive: Int, uid: Int) =
         withContext(Dispatchers.IO) { dao.updateNotif(notifActive, uid) }
 
+    private suspend fun updateLastNotified(lastNotified: Int, uid: Int) =
+        withContext(Dispatchers.IO) { dao.updateLastNotified(lastNotified, uid) }
+
     suspend fun deleteHabit(uid: Int) = withContext(Dispatchers.IO) { dao.deleteByUid(uid) }
     suspend fun createHabit(habit: Habit) = withContext(Dispatchers.IO) { dao.insertAll(habit) }
 
@@ -49,6 +49,7 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
             habitDesc.postValue(habit.habitDesc)
             streak = habit.streak
             notifActive = habit.notifActive
+            lastNotified = habit.lastNotified
             reminderTime.postValue(listOf(habit.notifHour, habit.notifMin))
             postDayValueFromString(
                 _createHabitUiModel.monEnabled,
@@ -69,14 +70,20 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
      */
     fun checkHabitActiveState(habit: Habit) {
         val time = Calendar.getInstance().timeInMillis
+        val dayOfWeek = getDayOfWeekFromUnixTime(time)
+        // For the notification to activate, all of the following must be true:
+        // 1. The day of the week must match one of the days designated in the habit
+        // 2. The notification active must not already be true
+        // 3. The day when the habit was last checked for activation was not today
         if (shouldBeNotifiedToday(
                 habit.daysOfWeek,
-                getDayOfWeekFromUnixTime(time),
+                dayOfWeek,
                 log
-            ) && habit.notifActive != 1
+            ) && habit.notifActive != 1 && habit.lastNotified != dayOfWeek
         )
             viewModelScope.launch {
                 log.info("Updating active state for ${habit.habitName}")
+                updateLastNotified(dayOfWeek, habit.uid)
                 updateNotifActive(1, habit.uid)
             }
     }
@@ -99,7 +106,7 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
      */
     fun habitDonePressed(habit: Habit) {
         val uid = habit.uid
-        val newStreak = habit.streak +1
+        val newStreak = habit.streak + 1
         // Only update if notifActive is true
         if (habit.notifActive == 1) {
             log.info("Updating streak for ${habit.habitName} to $newStreak")
@@ -108,7 +115,7 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
                 updateStreak(newStreak, uid)
             }
         } else {
-            log.warning("Pressed done when notifActive was not 1")
+            log.warning("Pressed done when notifActive was not 1 - shouldn't happen")
         }
     }
 
@@ -131,6 +138,9 @@ class HabitViewModel(private val dao: HabitDao) : ViewModel() {
             habitDesc.postValue("")
             habitName.postValue("")
             streak = 0
+            notifActive = 0
+            // Set to 9 as a default value
+            lastNotified = 9
             uid = null
         }
     }

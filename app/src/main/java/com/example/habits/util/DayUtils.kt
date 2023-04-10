@@ -84,11 +84,21 @@ fun getDayOfWeekFromUnixTime(time: Long): Int {
     }.get(Calendar.DAY_OF_WEEK)
 }
 
-fun shouldBeNotifiedToday(dayString: String, dayOfWeek: Int, logger: Logger): Boolean {
+/**
+ **
+ */
+fun shouldBeNotifiedToday(dayString: String, calendarDay: Int, logger: Logger): Boolean {
     if (!daysStringIsValid(dayString, logger)) return false
+    return dayString[convertCalendarDayToHabitDay(calendarDay)] == '1'
+}
+
+/**
+ *  @param calendarDay this is the day of the week according to the Calendar, where sunday = 0 and monday = 6.
+ * We must convert this to the same format as the dayString in this function
+ */
+fun convertCalendarDayToHabitDay(calendarDay: Int): Int {
     // Calendar days are mapped to SUNDAY = 1 .. SATURDAY = 7, so reorder to start on Monday and index from 0
-    val index = if (dayOfWeek == 1) 6 else dayOfWeek - 2
-    return dayString[index] == '1'
+    return if (calendarDay == 1) 6 else calendarDay - 2
 }
 
 
